@@ -1,0 +1,35 @@
+const Restaurant = require('../models/restaurants');
+const restaurantsRoute = require('express').Router();
+
+
+restaurantsRoute.get('/', async (req, res) => {
+    try {
+        let data = await Restaurant.FindAllRestaurants();
+        res.status(200).json(data);
+    } catch (error) {
+        res.status(500).json({ error });
+    }
+});
+
+restaurantsRoute.get('/:id', async (req, res) => {
+    try {
+        let { id } = req.params;
+        let data = await Restaurant.FindById(id);
+        res.status(200).json(data);
+    } catch (error) {
+        res.status(500).json({ error });
+    }
+});
+
+restaurantsRoute.post('/add', async (req, res) => {
+    try {
+        let { name, location, foodType } = req.body;
+        let data = await new Restaurant(name, location, foodType).InsertOne();
+        res.status(201).json(data);
+    } catch (error) {
+        res.status(500).json({ error });
+    }
+});
+
+
+module.exports = restaurantsRoute;
