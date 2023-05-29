@@ -1,6 +1,7 @@
 import React, { createContext, useEffect, useState } from 'react';
 import { DEV_API_URL } from '../utils/api_url';
 import { axiosURL } from '../utils/api_url';
+import { railwayURL } from '../utils/api_url';
 
 export const ContextPage = createContext();
 
@@ -16,7 +17,7 @@ export default function ContextProvider(props) {
 
     const LoadUsers = async () => {
         try {
-        let res = await fetch(`/api/users`);
+        let res = await fetch(`${railwayURL}/api/users`);
         let data = await res.json();
         setUsers(data);
         } catch(error){
@@ -26,7 +27,7 @@ export default function ContextProvider(props) {
 
     const checkEmail = async(email) => {
         try {    
-            let res = await fetch(`/api/users/email/${email}`);
+            let res = await fetch(`${railwayURL}/api/users/email/${email}`);
             let data = await res.json();
             return !!data;
         } catch (error) {
@@ -36,7 +37,7 @@ export default function ContextProvider(props) {
 
     const checkUsername = async(userName) => {
         try {          
-            let res = await fetch(`/api/users/username/${userName}`);
+            let res = await fetch(`${railwayURL}/api/users/username/${userName}`);
             let data = await res.json();
             return !!data;
         } catch (error) {
@@ -46,7 +47,7 @@ export default function ContextProvider(props) {
 
     const addUser = async(user) => {
         try {
-        let res = await fetch(`/api/users/add`,{
+        let res = await fetch(`${railwayURL}/api/users/add`,{
             method: 'POST',
             body: JSON.stringify(user),
             headers: {
@@ -54,10 +55,11 @@ export default function ContextProvider(props) {
             },
         });
         let data = await res.json();
-        console.log(data);
-        LoadUsers();
+        console.log(data);    
     } catch (error) {
         console.error(error);
+      } finally {
+        LoadUsers();
       }
     }
     
