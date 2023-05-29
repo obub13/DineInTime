@@ -10,13 +10,15 @@ const windowHeight = Dimensions.get('window').height;
 
 export default function Register(props) {
 
-    const { email, setEmail, phone, setPhone, userName, setUserName, password, setPassword, confirm, setConfirm, addUser } = useContext(ContextPage);
+    const { email, setEmail, phone, setPhone, userName, setUserName, password, setPassword, confirm, setConfirm, addUser, checkEmail, checkUsername } = useContext(ContextPage);
 
       const [camera, setCamera] = useState();
       const [type, setType] = useState(CameraType.back);
       const [imgSrc, setImgSrc] = useState('');
       const [permission, requestPermission] = Camera.useCameraPermissions();
       const [showCamera, setShowCamera] = useState(false);
+      const [isPasswordVisible, setIsPasswordVisible] = useState(false);
+      const [isVerifyVisible, setIsVerifyVisible] = useState(false);
 
     const handleAddImage = () => {
       setShowCamera(true);
@@ -67,9 +69,7 @@ export default function Register(props) {
     }
   };
 
-    const handleRegister = () => {
-      console.log(email, phone, userName, imgSrc, password, confirm);
-
+    const handleRegister = async() => {
       const user = {
           email: email,
           phone: phone,
@@ -79,12 +79,38 @@ export default function Register(props) {
           verify: confirm,
       };
 
+      let isEmailOccupied = await checkEmail(email);
+      let isUsernameOccupied = await checkUsername(userName);
+
+      // console.log(isEmailOccupied);
+      // console.log(isUsernameOccupied);
+
       if (email && phone && userName && imgSrc && password && confirm) {
-        addUser(user);
-        props.navigation.navigate("Login");
+        
+        if (isEmailOccupied) {
+          alert(`Email is already in use. \nPlease choose a different email.`);
+          isEmailOccupied = false;
+        } else if (isUsernameOccupied) {
+          alert(`Username is already occupied. \nPlease choose a different username`);
+          isUsernameOccupied = false;
+        }
+        else {
+          if (password === confirm) {  
+            addUser(user);
+            props.navigation.navigate("Login");
+          } else { 
+            alert(`Password and verify do not match. \nPlease re-enter your password.`);
+          }
+        }
+
       } else {
         alert('Invalid Error')
       }
+
+       isEmailOccupied = await checkEmail(email);
+       isUsernameOccupied = await checkUsername(userName);  
+      // console.log(isEmailOccupied);
+      // console.log(isUsernameOccupied);
     };
 
   return (
@@ -130,20 +156,28 @@ export default function Register(props) {
             </View>
             {imgSrc && <Image source={{ uri: imgSrc }} style={{ width: 100, height: 100, alignSelf:'center' }} />}
             <View style={{flexDirection:'row-reverse', justifyContent:'center'}}>
-            <TextInput
-              style={styles.pass}
+            <View style={styles.pass}>
+            <TextInput  style={{top:5}}           
               placeholder="Password"
-              secureTextEntry
+              secureTextEntry={!isPasswordVisible}
               onChangeText={setPassword}
               value={password}
             />
-            <TextInput
-              style={styles.pass}
+            <TouchableOpacity style={{ position: 'absolute', top: '25%' }} onPress={() => setIsPasswordVisible(!isPasswordVisible)}>
+              <MaterialIcons name={isPasswordVisible ? 'visibility-off' : 'visibility'} size={25} color="#A0A0A0" />
+            </TouchableOpacity>
+            </View>
+            <View style={styles.pass}>
+            <TextInput style={{top:5}} 
               placeholder="Verify"
-              secureTextEntry
+              secureTextEntry={!isVerifyVisible}
               onChangeText={setConfirm}
               value={confirm}
             />
+            <TouchableOpacity style={{ position: 'absolute', top: '25%' }} onPress={() => setIsVerifyVisible(!isVerifyVisible)}>
+              <MaterialIcons name={isVerifyVisible ? 'visibility-off' : 'visibility'} size={25} color="#A0A0A0" />
+            </TouchableOpacity>
+            </View>
             </View>
             <TouchableOpacity style={styles.btn} onPress={handleRegister}>
               <Text style={styles.title}>Sign Up</Text>

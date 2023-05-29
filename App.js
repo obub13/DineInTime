@@ -8,6 +8,11 @@ import Register from './Pages/Register';
 import Home from './Pages/Home';
 import ContextProvider from './Context/ContextProvider';
 
+import axios from 'axios';
+import { useEffect } from 'react';
+
+import { axiosURL } from './utils/api_url';
+
 const Stack = createNativeStackNavigator();
 const Drawer = createDrawerNavigator();
 
@@ -40,9 +45,22 @@ function MyDrawer() {
   );
 }
 
-
+const fetchApi = async() => {
+  try {
+    const res  = await fetch(`/api/users`);
+    console.log(res.data);
+  } catch (error) {
+    console.log(error.message);
+  }
+}
 
 export default function App() {
+
+  useEffect(() => {
+    fetchApi();
+  }, [])
+  
+
   return (
     <ContextProvider>
     <NavigationContainer>
