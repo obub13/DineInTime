@@ -1,4 +1,6 @@
 const { MongoClient, ObjectId } = require('mongodb');
+const { collection } = require('../models/users');
+require('dotenv').config();
 
 class DB {
 
@@ -6,8 +8,8 @@ class DB {
     dbName;
 
     constructor() {
-        this.client = new MongoClient('');
-        this.dbName = 'DineInTime';
+        this.client = new MongoClient(process.env.DB_URI);
+        this.dbName = process.env.DB_NAME;
     }
     
     async FindAll(collection, query = {}, projection = {}) {
@@ -29,6 +31,30 @@ class DB {
         } catch (error) {
             return error;
         }
+        finally {
+            await this.client.close();
+        }
+    }
+
+    async FindEmail(collection, email) {
+        try {
+            await this.client.connect();
+            return await this.client.db(this.dbName).collection(collection).findOne({ email: email });
+        } catch (error) {
+            return error;
+        } 
+        finally {
+            await this.client.close();
+        }
+    }
+
+    async FindUsername(collection, username) {
+        try {
+            await this.client.connect();
+            return await this.client.db(this.dbName).collection(collection).findOne({ username: username });
+        } catch (error) {
+            return error;
+        } 
         finally {
             await this.client.close();
         }

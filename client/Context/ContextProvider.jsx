@@ -1,6 +1,6 @@
 import React, { createContext, useEffect, useState } from 'react';
 import { DEV_API_URL } from '../utils/api_url';
-import axios from 'axios';
+import { axiosURL } from '../utils/api_url';
 
 export const ContextPage = createContext();
 
@@ -14,7 +14,6 @@ export default function ContextProvider(props) {
 
     const [users, setUsers] = useState([]);
 
-
     const LoadUsers = async () => {
         try {
         let res = await fetch(`/api/users`);
@@ -22,6 +21,26 @@ export default function ContextProvider(props) {
         setUsers(data);
         } catch(error){
             console.log({error});
+        }
+    }
+
+    const checkEmail = async(email) => {
+        try {    
+            let res = await fetch(`/api/users/email/${email}`);
+            let data = await res.json();
+            return !!data;
+        } catch (error) {
+            return error;
+        }
+    }
+
+    const checkUsername = async(userName) => {
+        try {          
+            let res = await fetch(`/api/users/username/${userName}`);
+            let data = await res.json();
+            return !!data;
+        } catch (error) {
+            console.log(error);
         }
     }
 
@@ -36,6 +55,7 @@ export default function ContextProvider(props) {
         });
         let data = await res.json();
         console.log(data);
+        LoadUsers();
     } catch (error) {
         console.error(error);
       }
@@ -48,7 +68,8 @@ export default function ContextProvider(props) {
         userName, setUserName,
         password, setPassword,
         confirm, setConfirm,
-        addUser, LoadUsers, users
+        addUser, LoadUsers, users,
+        checkEmail, checkUsername,
     }
 
   return (

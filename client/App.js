@@ -6,9 +6,16 @@ import Page1 from './Pages/Page1';
 import Login from './Pages/Login';
 import Register from './Pages/Register';
 import Home from './Pages/Home';
+import ContextProvider from './Context/ContextProvider';
+
+import axios from 'axios';
+import { useEffect } from 'react';
+
+import { axiosURL } from './utils/api_url';
 
 const Stack = createNativeStackNavigator();
 const Drawer = createDrawerNavigator();
+
 
 //creates the popup hamburger menu with the pages options
 function MyDrawer() {
@@ -38,10 +45,24 @@ function MyDrawer() {
   );
 }
 
-
+const fetchApi = async() => {
+  try {
+    const res  = await fetch(`/api/users`);
+    console.log(res.data);
+  } catch (error) {
+    console.log(error.message);
+  }
+}
 
 export default function App() {
+
+  useEffect(() => {
+    fetchApi();
+  }, [])
+  
+
   return (
+    <ContextProvider>
     <NavigationContainer>
       <MyDrawer>
       <Stack.Navigator initialRouteName="Page1">
@@ -52,5 +73,6 @@ export default function App() {
       </Stack.Navigator>
       </MyDrawer>
   </NavigationContainer>
+  </ContextProvider>
   );
 }

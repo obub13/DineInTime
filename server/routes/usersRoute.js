@@ -20,6 +20,26 @@ usersRoute.get('/:id', async (req, res) => {
     }
 });
 
+usersRoute.get('/email/:email', async (req, res) => {
+    try {
+        let { email } = req.params;
+        let data = await User.FindByEmail(email);
+        res.status(200).json(data);
+    } catch (error) {
+        res.status(500).json({ error });
+    }
+});
+
+usersRoute.get('/username/:username', async (req, res) => {
+    try {
+        let { username } = req.params;
+        let data = await User.FindByUserName(username);
+        res.status(200).json(data);
+    } catch (error) {
+        res.status(500).json({ error });
+    }
+})
+
 usersRoute.post('/add', async (req, res) => {
     try {
         let { email, phone, username, image, password, verify } = req.body;
@@ -29,6 +49,5 @@ usersRoute.post('/add', async (req, res) => {
         res.status(500).json({ error });
     }
 });
-
 
 module.exports = usersRoute;

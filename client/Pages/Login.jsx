@@ -1,15 +1,28 @@
 import { View, Text, StyleSheet, TextInput, Image, TouchableOpacity, ScrollView } from "react-native";
-import React, { useState } from "react";
+import React, { useContext } from "react";
+import { ContextPage } from "../Context/ContextProvider";
+import { sendNotification } from "./PushNotification";
 
 export default function Login(props) {
 
-  const [userName, setUserName] = useState();
-  const [password, setPassword] = useState();
+  const { userName, password, setUserName, setPassword, users } = useContext(ContextPage);
 
-  const handleLogin = () => {
-    console.log(userName, password);
+  const handleLogin = async() => {
     if (userName && password) {
-      props.navigation.navigate("Home");
+      let foundUser = null;
+
+      await users.forEach(user => {
+        if ((userName === user.username || userName === user.email) && password === user.password) {
+          foundUser = user;
+        }
+      });
+  
+      if (foundUser) {
+        await sendNotification('Login Successful', 'Welcome to the app!');
+        props.navigation.navigate("Home");
+      } else {
+        alert('Invalid username or password');
+      }
     } else {
       alert('Invalid Error')
     }
@@ -25,7 +38,7 @@ export default function Login(props) {
           <View style={styles.inputCon}>
             <TextInput
               style={styles.input}
-              placeholder="Username"
+              placeholder="Username or Email"
               onChangeText={setUserName}
               value={userName}
             />

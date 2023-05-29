@@ -27,6 +27,14 @@ class User {
         return await new DB().FindByID(User.collection, id);
     }
 
+    static async FindByEmail(email) {
+        return await new DB().FindEmail(User.collection, email);
+    }
+
+    static async FindByUserName(username) {
+        return await new DB().FindUsername(User.collection, username);
+    }
+
     async InsertOne(){
         return await new DB().Insert(User.collection, this);
     }
