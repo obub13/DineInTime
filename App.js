@@ -8,10 +8,10 @@ import Register from './Pages/Register';
 import Home from './Pages/Home';
 import ContextProvider from './Context/ContextProvider';
 
-import axios from 'axios';
+
 import { useEffect } from 'react';
 
-import { axiosURL, railwayURL } from './utils/api_url';
+import { axiosURL, railwayURL, renderURL } from './utils/api_url';
 
 const Stack = createNativeStackNavigator();
 const Drawer = createDrawerNavigator();
@@ -47,7 +47,7 @@ function MyDrawer() {
 
 const fetchApi = async() => {
   try {
-    const res  = await fetch(`${railwayURL}/api/users`);
+    const res  = await fetch(`${renderURL}/api/users`);
     const data = await res.json();
     console.log(data);
   } catch (error) {
