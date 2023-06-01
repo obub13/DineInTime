@@ -1,46 +1,14 @@
 import { View, Text, StyleSheet, ScrollView, Image, TextInput, Modal, TouchableOpacity } from "react-native";
-import React, { useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import * as Location from "expo-location";
+import { ContextPage } from "../Context/ContextProvider";
 
 export default function Home(props) {
 
-  const [location, setLocation] = useState();
-  const [errorMsg, setErrorMsg] = useState();
-  const [foodType, setFoodType] = useState();
-  const [diners, setDiners] = useState();
+  const { location, setLocation, reverseGC, setReverseGC, errorMsg, setErrorMsg, foodType, setFoodType, diners, setDiners, foodListVisible, 
+    setFoodListVisible, dinersListVisible, setDinersListVisible, foodTypes, dinersList, findRestaurants } = useContext(ContextPage);
 
-  const [foodListVisible, setFoodListVisible] = useState(false);
-  const [dinersListVisible, setDinersListVisible] = useState(false);
-
-  const foodTypes = [
-    { key: 1, label: "Asian" },
-    { key: 2, label: "Café" },
-    { key: 3, label: "Dairy" },
-    { key: 4, label: "Desserts" },
-    { key: 5, label: "Fish" },
-    { key: 6, label: "Indian" },
-    { key: 7, label: "Italian" },
-    { key: 8, label: "Mexican" },
-    { key: 9, label: "Mediterranean" },
-    { key: 10, label: "Pub" },
-    { key: 11, label: "Meat" },
-    { key: 12, label: "Vegetarian/Vegan" },
-  ];
-
-  const dinersList = [
-    { key: 1, value: "1" },
-    { key: 2, value: "2" },
-    { key: 3, value: "3" },
-    { key: 4, value: "4" },
-    { key: 5, value: "5" },
-    { key: 6, value: "6" },
-    { key: 7, value: "7" },
-    { key: 8, value: "8" },
-    { key: 9, value: "9" },
-    { key: 10, value: "10" },
-    { key: 11, value: "11" },
-    { key: 12, value: "12"},
-  ];
+    const cities = require('../utils/cities.json');
 
   useEffect(() => {
     (async () => {
@@ -51,21 +19,43 @@ export default function Home(props) {
       }
 
       let location = await Location.getCurrentPositionAsync({});
-      setLocation(location);
 
       let heading = await Location.getHeadingAsync({});
+  
+      let reverse = await Location.reverseGeocodeAsync(location.coords, { language: 'en' });
+      setReverseGC(reverse);
+      console.log(reverse[0].city);
+  
+      const latitude = location.coords.latitude; // User's latitude
+      const longitude = location.coords.longitude; // User's longitude
+  
+      let l = cities.find((c) => c.name === reverseGC[0].city)?.engName;
+      console.log(l);
+      
+      await setLocation(l);
+      
     })();
   }, []);
-
+  
   let text = "Searching for Location..";
   if (errorMsg) {
     text = errorMsg;
   } else if (location) {
-    text = JSON.stringify(location);
+    //console.log(location);
+    if (typeof location === "string") {
+      text = location;
+    } else {
+      text = JSON.stringify(location);
+    }
+
   }
 
+
+
   const handleFind = () => {
+    console.log(location, foodType, diners);
     if (location && foodType && diners) {
+        findRestaurants(location, foodType, diners);
         props.navigation.navigate("Page1");
     } else {
         alert('Invalid Error');

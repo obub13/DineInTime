@@ -1,5 +1,4 @@
 const { MongoClient, ObjectId } = require('mongodb');
-const { collection } = require('../models/users');
 require('dotenv').config();
 
 class DB {
@@ -71,6 +70,30 @@ class DB {
         }
     }
 
+    async FindRestaurantsByInputs(collection, location, foodType, diners) {
+        try {
+            await this.client.connect();
+
+            const agg = [
+                {
+                  '$match': {
+                    location: location, 
+                    foodType: foodType, 
+                    availableSeats: {
+                      '$gte': parseInt(diners)
+                    }
+                  }
+                }
+              ];
+
+            return await this.client.db(this.dbName).collection(collection).aggregate(agg).toArray();
+        } catch (error) {
+            return error;
+        }
+        finally {
+            await this.client.close();
+        }
+    }
 }
 
 module.exports = DB;
