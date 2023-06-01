@@ -103,7 +103,6 @@ export default function ContextProvider(props) {
   };
 
 
-  //not working
   const findRestaurants = async (location, foodType, diners) => {
     try {
         let res = await fetch(`${renderURL}/api/restaurants/find`, {
