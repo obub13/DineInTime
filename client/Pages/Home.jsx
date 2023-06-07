@@ -23,38 +23,48 @@ export default function Home(props) {
       let heading = await Location.getHeadingAsync({});
       let reverse = await Location.reverseGeocodeAsync(location.coords, { language: 'en' });
 
-      if (reverse) {
-        await setReverseGC(reverse);
-      }
-  
+      console.log(reverse);
+      // if (reverse) {
+      //   await setReverseGC(reverse);
+      // }
+
       const userLatitude = location.coords.latitude; // User's latitude
       const userLongitude = location.coords.longitude; // User's longitude
+     
+      let l;
 
-      let l = cities.find((c) => c.name === reverseGC[0].city)?.english_name;
-
-      if (l == null) {
-        // Find the closest city
+      if (reverse && reverseGC) {
+        await setReverseGC(reverse);
+        
+        let cityName = reverseGC[0].city;
+        console.log(cityName);
+        
+        l = await cities.find((c) => c.name === cityName)?.english_name;
+        console.log(l);
+        
+      } else {
+        // Handle the case when the city is not available
         let closestCity = null;
         let shortestDistance = Infinity;
 
-        cities.forEach((city) => {
+        await cities.forEach((city) => {
           const distance = calculateDistance(
             userLatitude,
             userLongitude,
             city.latt,
             city.long
-          );
+            );
+            
+            if (distance < shortestDistance) {
+              shortestDistance = distance;
+              closestCity = city.english_name;
+            }
+          });
+          
+          l = closestCity;
+          console.log("Closest city:", closestCity);
+        }
 
-          if (distance < shortestDistance) {
-            shortestDistance = distance;
-            closestCity = city.english_name;
-          }
-        });
-
-        l = closestCity;
-        console.log("Closest city:", closestCity);
-      }
-      
       await setLocation(l);
       
     })();
