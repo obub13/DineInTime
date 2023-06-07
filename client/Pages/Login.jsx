@@ -17,16 +17,17 @@ export default function Login(props) {
        users.forEach(user => {
         if ((userName === user.username || userName === user.email) && password === user.password) {
           foundUser = true;
-          console.log(foundUser);
-            if (foundUser) {
-              sendNotification('Login Successful', 'Welcome to the app!');
-              props.navigation.navigate("Home");
-            } else {
-              alert('Invalid username or password');
-            }
-        }
-      });
-    }  
+        }  });
+    } 
+    console.log(foundUser);
+    if (foundUser) {
+      sendNotification('Login Successful', 'Welcome to the app!');
+      props.navigation.navigate("Home");
+    } else {
+      alert('Invalid username or password');
+      return;
+    }
+        
     
    } catch (error) {
       alert('Invalid Error');

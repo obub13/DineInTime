@@ -60,7 +60,7 @@ export default function ContextProvider(props) {
       let data = await res.json();
       setUsers(data);
     } catch (error) {
-      console.log({ error }+" 111" );
+      console.log({ error } );
     }
   };
 
@@ -117,7 +117,9 @@ export default function ContextProvider(props) {
             let data;
             try {
               data = await JSON.parse(text);
-              await setRestaurants(data);
+              if (data) {
+                setRestaurants(data);
+              }
               console.log(restaurants);
             } catch (error) {
               throw new Error('Invalid JSON response');
