@@ -21,21 +21,71 @@ export default function Home(props) {
       let location = await Location.getCurrentPositionAsync({});
 
       let heading = await Location.getHeadingAsync({});
-  
       let reverse = await Location.reverseGeocodeAsync(location.coords, { language: 'en' });
-      setReverseGC(reverse);
-      console.log(reverse[0].city);
+
+      if (reverse) {
+        await setReverseGC(reverse);
+      }
   
-      const latitude = location.coords.latitude; // User's latitude
-      const longitude = location.coords.longitude; // User's longitude
-  
-      let l = cities.find((c) => c.name === reverseGC[0].city)?.engName;
-      console.log(l);
+      const userLatitude = location.coords.latitude; // User's latitude
+      const userLongitude = location.coords.longitude; // User's longitude
+
+      let l = cities.find((c) => c.name === reverseGC[0].city)?.english_name;
+
+      if (l == null) {
+        // Find the closest city
+        let closestCity = null;
+        let shortestDistance = Infinity;
+
+        cities.forEach((city) => {
+          const distance = calculateDistance(
+            userLatitude,
+            userLongitude,
+            city.latt,
+            city.long
+          );
+
+          if (distance < shortestDistance) {
+            shortestDistance = distance;
+            closestCity = city.english_name;
+          }
+        });
+
+        l = closestCity;
+        console.log("Closest city:", closestCity);
+      }
       
       await setLocation(l);
       
     })();
   }, []);
+
+
+  // Function to calculate the distance between two points using the Haversine formula
+  function calculateDistance(lat1, lon1, lat2, lon2) {
+    const earthRadius = 6371; // Radius of the Earth in kilometers
+
+    const dLat = toRadians(lat2 - lat1);
+    const dLon = toRadians(lon2 - lon1);
+
+    const a =
+      Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+      Math.cos(toRadians(lat1)) *
+        Math.cos(toRadians(lat2)) *
+        Math.sin(dLon / 2) *
+        Math.sin(dLon / 2);
+
+    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+
+    const distance = earthRadius * c;
+    return distance;
+  }
+
+  // Function to convert degrees to radians
+  function toRadians(degrees) {
+    return degrees * (Math.PI / 180);
+  }
+
   
   let text = "Searching for Location..";
   if (errorMsg) {
@@ -47,10 +97,7 @@ export default function Home(props) {
     } else {
       text = JSON.stringify(location);
     }
-
   }
-
-
 
   const handleFind = () => {
     console.log(location, foodType, diners);

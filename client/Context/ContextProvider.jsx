@@ -26,7 +26,7 @@ export default function ContextProvider(props) {
 
   const foodTypes = [
     { key: 1, label: "Asian" },
-    { key: 2, label: "Café" },
+    { key: 2, label: "Cafe" },
     { key: 3, label: "Dairy" },
     { key: 4, label: "Desserts" },
     { key: 5, label: "Fish" },
@@ -117,7 +117,6 @@ export default function ContextProvider(props) {
             let data;
             try {
               data = JSON.parse(text);
-              console.log(data);
               setRestaurants(data);
               console.log(restaurants);
             } catch (error) {
@@ -127,11 +126,6 @@ export default function ContextProvider(props) {
           } else {
             throw new Error(`Request failed ${res.status}`);
           }
-        // let data = await res.json();
-        // console.log(data);
-        // setRestaurants(data);
-        // console.log(restaurants);
-        // return data;
     } catch (error) {
         console.log(error);
     }

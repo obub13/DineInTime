@@ -5,9 +5,10 @@ import { sendNotification } from "./PushNotification";
 
 export default function Login(props) {
 
-  const { userName, password, setUserName, setPassword, users } = useContext(ContextPage);
+  const { userName, password, setUserName, setPassword, users, LoadUsers } = useContext(ContextPage);
 
   const handleLogin = async() => {
+    await LoadUsers();
     if (userName && password) {
       let foundUser = null;
 
