@@ -1,7 +1,7 @@
 const foodType = require('../models/foodTypes');
 const foodTypesRoute = require('express').Router();
 
-foodTypesRoute.get('/api/foodTypes', async (req, res) => {
+foodTypesRoute.get('/', async (req, res) => {
     try {
         let data = await foodType.FindAllFoodTypes();
         res.status(200).json(data);

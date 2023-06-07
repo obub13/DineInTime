@@ -1,7 +1,7 @@
 const User = require('../models/users');
 const usersRoute = require('express').Router();
 
-usersRoute.get('/api/users', async (req, res) => {
+usersRoute.get('/', async (req, res) => {
     try {
         let data = await User.FindAllUsers();
         res.status(200).json(data);

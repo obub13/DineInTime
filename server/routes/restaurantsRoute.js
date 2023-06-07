@@ -1,7 +1,7 @@
 const Restaurant = require('../models/restaurants');
 const restaurantsRoute = require('express').Router();
 
-restaurantsRoute.get('/api/restaurants', async (req, res) => {
+restaurantsRoute.get('/', async (req, res) => {
     try {
         let data = await Restaurant.FindAllRestaurants();
         res.status(200).json(data);
