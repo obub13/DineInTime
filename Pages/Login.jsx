@@ -1,5 +1,5 @@
 import { View, Text, StyleSheet, TextInput, Image, TouchableOpacity, ScrollView } from "react-native";
-import React, { useContext } from "react";
+import React, { useContext, useState } from "react";
 import { ContextPage } from "../Context/ContextProvider";
 import { sendNotification } from "./PushNotification";
 
@@ -8,24 +8,30 @@ export default function Login(props) {
   const { userName, password, setUserName, setPassword, users, LoadUsers } = useContext(ContextPage);
 
   const handleLogin = async() => {
+    try {
     await LoadUsers();
-    if (userName && password) {
-      let foundUser = null;
+    console.log(userName, password);
 
-      await users.forEach(user => {
+    let foundUser = false;
+    if (userName && password) {
+       users.forEach(user => {
         if ((userName === user.username || userName === user.email) && password === user.password) {
-          foundUser = user;
-        }
-      });
-  
-      if (foundUser) {
-        await sendNotification('Login Successful', 'Welcome to the app!');
-        props.navigation.navigate("Home");
-      } else {
-        alert('Invalid username or password');
-      }
+          foundUser = true;
+        }  });
+    } 
+    console.log(foundUser);
+    if (foundUser) {
+      sendNotification('Login Successful', 'Welcome to the app!');
+      props.navigation.navigate("Home");
     } else {
-      alert('Invalid Error')
+      alert('Invalid username or password');
+      return;
+    }
+        
+    
+   } catch (error) {
+      alert('Invalid Error');
+      console.log('Error loading users:', error);
     }
   };
 

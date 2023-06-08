@@ -1,7 +1,7 @@
 import React, { createContext, useEffect, useState } from "react";
 import { DEV_API_URL } from "../utils/api_url";
 import { axiosURL } from "../utils/api_url";
-import { railwayURL, renderURL } from "../utils/api_url";
+import { railwayURL, apiUrl } from "../utils/api_url";
 
 export const ContextPage = createContext();
 
@@ -56,17 +56,17 @@ export default function ContextProvider(props) {
 
   const LoadUsers = async () => {
     try {
-      let res = await fetch(`${renderURL}/api/users`);
+      let res = await fetch(`${apiUrl}/api/users`);
       let data = await res.json();
       setUsers(data);
     } catch (error) {
-      console.log({ error });
+      console.log({ error:error.message } );
     }
   };
 
   const checkEmail = async (email) => {
     try {
-      let res = await fetch(`${renderURL}/api/users/email/${email}`);
+      let res = await fetch(`${apiUrl}/api/users/email/${email}`);
       let data = await res.json();
       return !!data;
     } catch (error) {
@@ -76,7 +76,7 @@ export default function ContextProvider(props) {
 
   const checkUsername = async (userName) => {
     try {
-      let res = await fetch(`${renderURL}/api/users/username/${userName}`);
+      let res = await fetch(`${apiUrl}/api/users/username/${userName}`);
       let data = await res.json();
       return !!data;
     } catch (error) {
@@ -86,7 +86,7 @@ export default function ContextProvider(props) {
 
   const addUser = async (user) => {
     try {
-      let res = await fetch(`${renderURL}/api/users/add`, {
+      let res = await fetch(`${apiUrl}/api/users/add`, {
         method: "POST",
         body: JSON.stringify(user),
         headers: {
@@ -105,7 +105,7 @@ export default function ContextProvider(props) {
 
   const findRestaurants = async (location, foodType, diners) => {
     try {
-        let res = await fetch(`${renderURL}/api/restaurants/find`, {
+        let res = await fetch(`${apiUrl}/api/restaurants/find`, {
             method: "POST",
             body: JSON.stringify({ location, foodType, diners }),
             headers: {
@@ -116,8 +116,10 @@ export default function ContextProvider(props) {
             const text = await res.text();
             let data;
             try {
-              data = JSON.parse(text);
-              setRestaurants(data);
+              data = await JSON.parse(text);
+              if (data) {
+                setRestaurants(data);
+              }
               console.log(restaurants);
             } catch (error) {
               throw new Error('Invalid JSON response');
