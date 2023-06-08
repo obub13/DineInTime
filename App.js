@@ -16,7 +16,7 @@ import { apiUrl } from './utils/api_url';
 const Stack = createNativeStackNavigator();
 const Drawer = createDrawerNavigator();
 
-
+//d
 //creates the popup hamburger menu with the pages options
 function MyDrawer() {
   return (            //startup page 
