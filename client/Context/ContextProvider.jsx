@@ -1,7 +1,5 @@
 import React, { createContext, useEffect, useState } from "react";
-import { DEV_API_URL } from "../utils/api_url";
-import { axiosURL } from "../utils/api_url";
-import { railwayURL, apiUrl } from "../utils/api_url";
+import { apiUrl } from "../utils/api_url";
 
 export const ContextPage = createContext();
 

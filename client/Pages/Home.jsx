@@ -23,17 +23,14 @@ export default function Home(props) {
       let heading = await Location.getHeadingAsync({});
       let reverse = await Location.reverseGeocodeAsync(location.coords, { language: 'en' });
 
-      console.log(reverse);
-      // if (reverse) {
-      //   await setReverseGC(reverse);
-      // }
+      console.log(reverse, 'reverse');
 
-      const userLatitude = location.coords.latitude; // User's latitude
-      const userLongitude = location.coords.longitude; // User's longitude
+      let userLatitude = await location.coords.latitude; // User's latitude
+      let userLongitude = await location.coords.longitude; // User's longitude
      
       let l;
 
-      if (reverse && reverseGC) {
+      if (reverse && reverse[0].city) {
         await setReverseGC(reverse);
         
         let cityName = reverseGC[0].city;
@@ -41,7 +38,7 @@ export default function Home(props) {
         
         l = await cities.find((c) => c.name === cityName)?.english_name;
         console.log(l);
-        
+        setLocation(l);        
       } else {
         // Handle the case when the city is not available
         let closestCity = null;
@@ -61,12 +58,10 @@ export default function Home(props) {
             }
           });
           
-          l = closestCity;
+          //l = closestCity;
           console.log("Closest city:", closestCity);
+          setLocation(closestCity);
         }
-
-      await setLocation(l);
-      
     })();
   }, []);
 
