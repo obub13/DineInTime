@@ -33,7 +33,7 @@ export default function Home(props) {
      
       let l;
 
-      if (reverse && reverseGC) {
+      if (reverse && reverse[0].city) {
         await setReverseGC(reverse);
         
         let cityName = reverseGC[0].city;
