@@ -24,16 +24,13 @@ export default function Home(props) {
       let reverse = await Location.reverseGeocodeAsync(location.coords, { language: 'en' });
 
       console.log(reverse);
-      // if (reverse) {
-      //   await setReverseGC(reverse);
-      // }
 
       const userLatitude = location.coords.latitude; // User's latitude
       const userLongitude = location.coords.longitude; // User's longitude
      
       let l;
 
-      if (reverse && reverseGC) {
+      if (reverse && reverse[0].city) {
         await setReverseGC(reverse);
         
         let cityName = reverseGC[0].city;

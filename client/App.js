@@ -11,7 +11,7 @@ import ContextProvider from './Context/ContextProvider';
 
 import { useEffect } from 'react';
 
-import { axiosURL, railwayURL, renderURL } from './utils/api_url';
+import { apiUrl } from './utils/api_url';
 
 const Stack = createNativeStackNavigator();
 const Drawer = createDrawerNavigator();
@@ -47,7 +47,7 @@ function MyDrawer() {
 
 const fetchApi = async() => {
   try {
-    const res  = await fetch(`${renderURL}/api/users`);
+    const res  = await fetch(`${apiUrl}/api/users`);
     const data = await res.json();
     console.log(data);
   } catch (error) {
