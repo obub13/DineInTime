@@ -17,20 +17,9 @@ export default function Login(props) {
        users.forEach(user => {
         if ((userName === user.username || userName === user.email) && password === user.password) {
           foundUser = true;
-        }  
-      });
+        }  });
     } 
     console.log(foundUser);
-
-    await handleUser(foundUser);
-           
-   } catch (error) {
-      alert('Invalid Error');
-      console.log('Error loading users:', error);
-    }
-  };
-
-  const handleUser = (foundUser) => {
     if (foundUser) {
       sendNotification('Login Successful', 'Welcome to the app!');
       props.navigation.navigate("Home");
@@ -38,7 +27,13 @@ export default function Login(props) {
       alert('Invalid username or password');
       return;
     }
-  }
+        
+    
+   } catch (error) {
+      alert('Invalid Error');
+      console.log('Error loading users:', error);
+    }
+  };
 
   return (
     <View style={styles.container}>
