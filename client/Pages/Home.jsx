@@ -19,6 +19,7 @@ export default function Home(props) {
       }
 
       let location = await Location.getCurrentPositionAsync({});
+      //console.log(location);
 
       let heading = await Location.getHeadingAsync({});
       let reverse = await Location.reverseGeocodeAsync(location.coords, { language: 'en' });
@@ -39,6 +40,7 @@ export default function Home(props) {
         l = await cities.find((c) => c.name === cityName)?.english_name;
         console.log(l);
         setLocation(l);        
+
       } else {
         // Handle the case when the city is not available
         let closestCity = null;
@@ -62,7 +64,7 @@ export default function Home(props) {
           console.log("Closest city:", closestCity);
           setLocation(closestCity);
         }
-    })();
+        })();
   }, []);
 
 
