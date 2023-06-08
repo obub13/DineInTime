@@ -5,13 +5,14 @@ import { ContextPage } from "../Context/ContextProvider";
 
 export default function Home(props) {
 
-  const { location, setLocation, reverseGC, setReverseGC, errorMsg, setErrorMsg, foodType, setFoodType, diners, setDiners, foodListVisible, 
+  const { location, setLocation, errorMsg, setErrorMsg, foodType, setFoodType, diners, setDiners, foodListVisible, 
     setFoodListVisible, dinersListVisible, setDinersListVisible, foodTypes, dinersList, findRestaurants } = useContext(ContextPage);
 
     const cities = require('../utils/cities.json');
 
   useEffect(() => {
     (async () => {
+      try {
       let { status } = await Location.requestForegroundPermissionsAsync();
       if (status !== "granted") {
         setErrorMsg("Permission to access location was denied");
@@ -22,21 +23,19 @@ export default function Home(props) {
 
       let heading = await Location.getHeadingAsync({});
       let reverse = await Location.reverseGeocodeAsync(location.coords, { language: 'en' });
-
       console.log(reverse, 'reverse');
 
-      
       let l;
       
       if (reverse && reverse[0].city) {
-        await setReverseGC(reverse);
         
-        let cityName = reverseGC[0].city;
+        let cityName = reverse[0].city;
         console.log(cityName);
         
         l = await cities.find((c) => c.name === cityName)?.english_name;
         console.log(l);
         setLocation(l);        
+        
       } else {
         // Handle the case when the city is not available
         let userLatitude = location.coords.latitude; // User's latitude
@@ -59,10 +58,12 @@ export default function Home(props) {
             }
           });
           
-          //l = closestCity;
           console.log("Closest city:", closestCity);
           setLocation(closestCity);
         }
+      } catch (error) {
+          console.log(error.message);
+      }
     })();
   }, []);
 

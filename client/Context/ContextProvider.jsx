@@ -14,7 +14,6 @@ export default function ContextProvider(props) {
   const [restaurants, setRestaurants] = useState([]);
 
   const [location, setLocation] = useState();
-  const [reverseGC, setReverseGC] = useState();
   const [errorMsg, setErrorMsg] = useState();
   const [foodType, setFoodType] = useState();
   const [diners, setDiners] = useState();
@@ -110,15 +109,15 @@ export default function ContextProvider(props) {
               "Content-Type": "application/json",
             },
           });
+          let data;
           if (res.ok) {
-            const text = await res.text();
-            let data;
+            const text = await res.text();            
             try {
               data = await JSON.parse(text);
               if (data) {
                 setRestaurants(data);
+                console.log(restaurants);
               }
-              console.log(restaurants);
             } catch (error) {
               throw new Error('Invalid JSON response');
             }
@@ -149,8 +148,6 @@ export default function ContextProvider(props) {
     checkUsername,
     location,
     setLocation,
-    reverseGC, 
-    setReverseGC,
     errorMsg,
     setErrorMsg,
     foodType,
