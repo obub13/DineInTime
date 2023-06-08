@@ -25,11 +25,9 @@ export default function Home(props) {
 
       console.log(reverse, 'reverse');
 
-      let userLatitude = await location.coords.latitude; // User's latitude
-      let userLongitude = await location.coords.longitude; // User's longitude
-     
+      
       let l;
-
+      
       if (reverse && reverse[0].city) {
         await setReverseGC(reverse);
         
@@ -41,6 +39,9 @@ export default function Home(props) {
         setLocation(l);        
       } else {
         // Handle the case when the city is not available
+        let userLatitude = location.coords.latitude; // User's latitude
+        let userLongitude = location.coords.longitude; // User's longitude
+
         let closestCity = null;
         let shortestDistance = Infinity;
 
