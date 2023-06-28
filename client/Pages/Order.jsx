@@ -19,9 +19,9 @@ export default function Order(props) {
     }
 
     const handleSeatReservation = async (restaurant, seatType) => {
-        let numDiners = diners; // Number of diners for the reservation
-        let id = restaurant._id.toString();
-        let name = restaurant.name;
+        let numDiners = await diners; // Number of diners for the reservation
+        let id = await restaurant._id.toString();
+        let name = await restaurant.name;
 
         Alert.alert(
           'Make Reservation',
@@ -34,7 +34,7 @@ export default function Order(props) {
             {
               text: 'Yes',
               onPress: () => {
-                updateSeats(id, seatType, numDiners);
+               updateSeats(id, seatType, numDiners);
               },
             },
           ]
