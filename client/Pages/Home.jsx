@@ -6,13 +6,16 @@ import { ContextPage } from "../Context/ContextProvider";
 export default function Home(props) {
 
   const { location, setLocation, errorMsg, setErrorMsg, foodType, setFoodType, diners, setDiners, foodListVisible, 
-    setFoodListVisible, dinersListVisible, setDinersListVisible, foodTypes, dinersList, findRestaurants } = useContext(ContextPage);
+    setFoodListVisible, dinersListVisible, setDinersListVisible, foodTypes, dinersList, findRestaurants, LoadFoodTypes, setIsLoading } = useContext(ContextPage);
 
     const cities = require('../utils/cities.json');
 
   useEffect(() => {
     (async () => {
       try {
+
+      LoadFoodTypes();
+
       let { status } = await Location.requestForegroundPermissionsAsync();
       if (status !== "granted") {
         setErrorMsg("Permission to access location was denied");
@@ -110,7 +113,8 @@ export default function Home(props) {
     console.log(location, foodType, diners);
     if (location && foodType && diners) {
         findRestaurants(location, foodType, diners);
-        props.navigation.navigate("Page1");
+        setIsLoading(true);
+        props.navigation.navigate("Order");
     } else {
         alert('Invalid Error');
     }
@@ -144,13 +148,13 @@ export default function Home(props) {
             <View style={styles.modal}>
               {foodTypes.map((item) => (
                 <TouchableOpacity style={styles.modalTO}
-                  key={item.key}
+                  key={item._id}
                   onPress={() => {
-                    setFoodType(item.label);
+                    setFoodType(item.name);
                     setFoodListVisible(false);
                   }}
                 >
-                  <Text style={styles.modalItem}>{item.label}</Text>
+                  <Text style={styles.modalItem}>{item.name}</Text>
                 </TouchableOpacity>
               ))}
             </View>

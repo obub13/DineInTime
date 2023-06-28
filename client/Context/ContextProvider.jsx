@@ -11,6 +11,7 @@ export default function ContextProvider(props) {
   const [confirm, setConfirm] = useState();
 
   const [users, setUsers] = useState([]);
+  const [foodTypes, setFoodTypes] = useState([]);
   const [restaurants, setRestaurants] = useState([]);
 
   const [location, setLocation] = useState();
@@ -20,21 +21,22 @@ export default function ContextProvider(props) {
 
   const [foodListVisible, setFoodListVisible] = useState(false);
   const [dinersListVisible, setDinersListVisible] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
 
-  const foodTypes = [
-    { key: 1, label: "Asian" },
-    { key: 2, label: "Cafe" },
-    { key: 3, label: "Dairy" },
-    { key: 4, label: "Desserts" },
-    { key: 5, label: "Fish" },
-    { key: 6, label: "Indian" },
-    { key: 7, label: "Italian" },
-    { key: 8, label: "Mexican" },
-    { key: 9, label: "Mediterranean" },
-    { key: 10, label: "Pub" },
-    { key: 11, label: "Meat" },
-    { key: 12, label: "Vegetarian/Vegan" },
-  ];
+  // const foodTypes = [
+  //   { key: 1, label: "Asian" },
+  //   { key: 2, label: "Cafe" },
+  //   { key: 3, label: "Dairy" },
+  //   { key: 4, label: "Desserts" },
+  //   { key: 5, label: "Fish" },
+  //   { key: 6, label: "Indian" },
+  //   { key: 7, label: "Italian" },
+  //   { key: 8, label: "Mexican" },
+  //   { key: 9, label: "Mediterranean" },
+  //   { key: 10, label: "Pub" },
+  //   { key: 11, label: "Meat" },
+  //   { key: 12, label: "Vegetarian/Vegan" },
+  // ];
 
   const dinersList = [
     { key: 1, value: "1" },
@@ -60,6 +62,16 @@ export default function ContextProvider(props) {
       console.log({ error } );
     }
   };
+
+  const LoadFoodTypes = async () => {
+    try {
+      let res = await fetch(`${apiUrl}/api/foodTypes`);
+      let data = await res.json();
+      setFoodTypes(data);
+    } catch (error) {
+      console.log({ error });
+    }
+  }
 
   const checkEmail = async (email) => {
     try {
@@ -109,18 +121,21 @@ export default function ContextProvider(props) {
               "Content-Type": "application/json",
             },
           });
-          let data;
           if (res.ok) {
-            const text = await res.text();            
+            const text = await res.text();
+            let data;
+      
             try {
               data = await JSON.parse(text);
-              if (data) {
-                setRestaurants(data);
-                console.log(restaurants);
-              }
             } catch (error) {
               throw new Error('Invalid JSON response');
             }
+      
+            if (data) {
+              setRestaurants(data);
+              setIsLoading(false);
+            }
+            
             return data;
           } else {
             throw new Error(`Request failed ${res.status}`);
@@ -129,6 +144,30 @@ export default function ContextProvider(props) {
         console.log(error);
     }
   };
+
+  const updateSeats = async (id, seatType, numDiners) => {
+    try {
+      const response = await fetch(`${apiUrl}/api/restaurants/seats`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          id: id,
+          seatType: seatType,
+          numDiners: numDiners,
+        }),
+      });
+      const data = await response.json();
+      if (response.ok) {
+        console.log('Seats updated successfully:', data);
+      } else {
+        console.error('Error updating seats:', data);
+      }
+    } catch (error) {
+      console.error('Error updating seats:', error);
+    }
+  }
 
   const value = {
     email,
@@ -143,6 +182,7 @@ export default function ContextProvider(props) {
     setConfirm,
     addUser,
     LoadUsers,
+    LoadFoodTypes,
     users,
     checkEmail,
     checkUsername,
@@ -160,7 +200,12 @@ export default function ContextProvider(props) {
     setDinersListVisible,
     foodTypes,
     dinersList,
+    restaurants,
+    setRestaurants,
     findRestaurants,
+    isLoading,
+    setIsLoading,
+    updateSeats,
   };
 
   return (

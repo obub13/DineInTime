@@ -32,6 +32,10 @@ class Restaurant {
     static async FindRestaurantsForUser(location, foodType, diners) {
         return await new DB().FindRestaurantsByInputs(Restaurant.collection, location, foodType, diners);
     }
+
+    static async UpdateSeats(id, seatType, numDiners) {
+        return await new DB().UpdateSeatsByReservation(Restaurant.collection, id, seatType, numDiners);
+    }
 }
 
 
