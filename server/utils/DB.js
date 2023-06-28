@@ -85,12 +85,30 @@ class DB {
                   }
                 }
               ];
-
             return await this.client.db(this.dbName).collection(collection).aggregate(agg).toArray();
         } catch (error) {
             return error;
         }
         finally {
+            await this.client.close();
+        }
+    }
+
+    async UpdateSeatsByReservation(collection, id, seatType, numDiners) {
+        try {
+            await this.client.connect();   
+            console.log("server" + id, seatType, numDiners);     
+            return await this.client.db(this.dbName).collection(collection).updateOne(
+                { _id: new ObjectId(id) },
+            {
+            $inc: {
+                [`locationSeats.${seatType}`]: - parseInt(numDiners),
+                availableSeats: - parseInt(numDiners)
+              }
+            });     
+        } catch (error) {
+            return error;
+        } finally {
             await this.client.close();
         }
     }
