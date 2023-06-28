@@ -22,10 +22,10 @@ export default function Order(props) {
         let numDiners = await diners; // Number of diners for the reservation
         let id = await restaurant._id.toString();
         let name = await restaurant.name;
-
+        console.log(id, seatType, numDiners);
         Alert.alert(
           'Make Reservation',
-          `Do you want to make a reservation for ${numDiners} persons at ${name} (${seatType})?`,
+          `Do you want to make a reservation for ${numDiners} persons at ${name} - ${seatType}?`,
           [
             {
               text: 'No',
@@ -34,7 +34,7 @@ export default function Order(props) {
             {
               text: 'Yes',
               onPress: () => {
-               updateSeats(id, seatType, numDiners);
+               if (id && seatType && numDiners) { updateSeats(id, seatType, numDiners) };
               },
             },
           ]
