@@ -147,22 +147,27 @@ export default function ContextProvider(props) {
 
   const updateSeats = async (id, seatType, numDiners) => {
     try {
-      const response = await fetch(`${apiUrl}/api/restaurants/seats`, {
+      let res = await fetch(`${apiUrl}/api/restaurants/seats`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({
-          id: id,
-          seatType: seatType,
-          numDiners: numDiners,
-        }),
+        body: JSON.stringify({ id, seatType, numDiners }),
       });
-      const data = await response.json();
-      if (response.ok) {
-        console.log('Seats updated successfully:', data);
+      console.log(res.ok + " status");
+      if (res.ok) {
+        const text = await res.text();
+        let data;
+        console.log(data);
+        try {
+          data = await JSON.parse(text);
+          console.log(data);
+        } catch (error) {
+          throw new Error('Invalid JSON response');
+        }
+        return data;
       } else {
-        console.error('Error updating seats:', data);
+        console.error('Error updating:', data);
       }
     } catch (error) {
       console.error('Error updating seats:', error);
