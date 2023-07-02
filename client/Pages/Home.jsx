@@ -128,6 +128,7 @@ export default function Home(props) {
             source={require("../assets/icon.png")}
             style={styles.icon}
           />
+          <Text style={styles.text}>DineInTime</Text>
         </View>
         <View style={styles.inputCon}>
           <TextInput
@@ -208,6 +209,13 @@ const styles = StyleSheet.create({
     width: 100,
     height: 100,
     alignSelf: "center",
+  },
+  text: {
+    alignSelf: "center",
+    color: "#D9D9D9",
+    fontSize: 30,
+    fontFamily: "sans-serif-condensed",
+    fontWeight: 700,
   },
   inputCon: {
     flex: 1,

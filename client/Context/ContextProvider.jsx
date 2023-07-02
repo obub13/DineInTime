@@ -1,5 +1,6 @@
-import React, { createContext, useEffect, useState } from "react";
+import React, { createContext, useState } from "react";
 import { apiUrl } from "../utils/api_url";
+import { sendNotification } from "../Pages/PushNotification";
 
 export const ContextPage = createContext();
 
@@ -23,21 +24,6 @@ export default function ContextProvider(props) {
   const [dinersListVisible, setDinersListVisible] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
 
-  // const foodTypes = [
-  //   { key: 1, label: "Asian" },
-  //   { key: 2, label: "Cafe" },
-  //   { key: 3, label: "Dairy" },
-  //   { key: 4, label: "Desserts" },
-  //   { key: 5, label: "Fish" },
-  //   { key: 6, label: "Indian" },
-  //   { key: 7, label: "Italian" },
-  //   { key: 8, label: "Mexican" },
-  //   { key: 9, label: "Mediterranean" },
-  //   { key: 10, label: "Pub" },
-  //   { key: 11, label: "Meat" },
-  //   { key: 12, label: "Vegetarian/Vegan" },
-  // ];
-
   const dinersList = [
     { key: 1, value: "1" },
     { key: 2, value: "2" },
@@ -49,8 +35,6 @@ export default function ContextProvider(props) {
     { key: 8, value: "8" },
     { key: 9, value: "9" },
     { key: 10, value: "10" },
-    { key: 11, value: "11" },
-    { key: 12, value: "12" },
   ];
 
   const LoadUsers = async () => {
@@ -68,6 +52,16 @@ export default function ContextProvider(props) {
       let res = await fetch(`${apiUrl}/api/foodTypes`);
       let data = await res.json();
       setFoodTypes(data);
+    } catch (error) {
+      console.log({ error });
+    }
+  }
+
+  const LoadRestaurants = async () => {
+    try {
+      let res = await fetch(`${apiUrl}/api/restaurants`);
+      let data = await res.json();
+      setRestaurants(data);
     } catch (error) {
       console.log({ error });
     }
@@ -146,6 +140,7 @@ export default function ContextProvider(props) {
   };
 
   const updateSeats = async (id, seatType, numDiners) => {
+    console.log("client    "  + id, seatType, numDiners);
     try {
       let res = await fetch(`${apiUrl}/api/restaurants/seats`, {
         method: 'PUT',
@@ -154,25 +149,26 @@ export default function ContextProvider(props) {
         },
         body: JSON.stringify({ id, seatType, numDiners }),
       });
-      console.log(res.ok + " status");
-      if (res.ok) {
-        const text = await res.text();
-        let data;
+      if (res.status === 200) {
+        // Successful response
+        const data = await res.json();
         console.log(data);
-        try {
-          data = await JSON.parse(text);
-          console.log(data);
-        } catch (error) {
-          throw new Error('Invalid JSON response');
+        if (data) {
+          sendNotification('Reservation Successful', 'Thank you for the reservation!');
+          //TODO ------------------------------------------------- move the user to another page
         }
         return data;
       } else {
-        console.error('Error updating:', data);
+        // Error response
+        const errorData = await res.json();
+        console.error('Error updating seats:', errorData);
       }
     } catch (error) {
       console.error('Error updating seats:', error);
     }
-  }
+  };
+
+
 
   const value = {
     email,
@@ -188,6 +184,7 @@ export default function ContextProvider(props) {
     addUser,
     LoadUsers,
     LoadFoodTypes,
+    LoadRestaurants,
     users,
     checkEmail,
     checkUsername,

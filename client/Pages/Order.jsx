@@ -54,6 +54,7 @@ export default function Order(props) {
           <View style={styles.container}>
         <View style={styles.iconCon}>
           <Image source={require("../assets/icon.png")} style={styles.icon} />
+          <Text style={styles.textLogo}>DineInTime</Text>
         </View>
         <View style={{flex: 1.5}}>
             <Text style={styles.text}>
@@ -148,6 +149,13 @@ const styles = StyleSheet.create({
         borderWidth: 1,
         margin: 10,
         padding: 5,
+    },
+    textLogo: {
+      alignSelf: "center",
+      color: "#D9D9D9",
+      fontSize: 30,
+      fontFamily: "sans-serif-condensed",
+      fontWeight: 700,
     },
       restaurantContainer: {
         flexDirection: 'column',

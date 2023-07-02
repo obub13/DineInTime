@@ -97,7 +97,7 @@ class DB {
     async UpdateSeatsByReservation(collection, id, seatType, numDiners) {
         try {
             await this.client.connect();   
-            console.log("server" + id, seatType, numDiners);     
+            // console.log("server" + id, seatType, numDiners);     
             return await this.client.db(this.dbName).collection(collection).updateOne(
                 { _id: new ObjectId(id) },
             {
