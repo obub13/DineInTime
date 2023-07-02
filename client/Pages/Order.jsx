@@ -5,8 +5,10 @@ import { useState } from 'react';
 
 export default function Order(props) {
 
-    const { restaurants, setFoodType, diners, setDiners, isLoading, updateSeats } = useContext(ContextPage);
+    const { restaurants, setFoodType, diners, setDiners, isLoading, updateSeats, LoadRestaurants } = useContext(ContextPage);
     const [searchInput, setSearchInput] = useState('');
+
+    LoadRestaurants();
 
     const filteredRestaurants = restaurants.filter((restaurant) =>
     restaurant.name.toLowerCase().includes(searchInput.toLowerCase()));

@@ -33,7 +33,7 @@ export default function Login(props) {
     console.log(foundUser);
     if (foundUser) {
       sendNotification('Login Successful', 'Welcome to the app!');
-      props.navigation.navigate("Home");
+      props.navigation.navigate("Main");
     } else {
       alert('Invalid username or password');
       return;

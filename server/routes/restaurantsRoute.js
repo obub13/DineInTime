@@ -10,17 +10,6 @@ restaurantsRoute.get('/', async (req, res) => {
     }
 });
 
-restaurantsRoute.put('/seats', async (req, res) => {
-    try {
-      let { id, seatType, numDiners } = req.body;
-    //   console.log(req.body);
-      let data = await Restaurant.UpdateSeats(id, seatType, numDiners);
-      res.status(200).json(data);
-    } catch (error) {
-      res.status(500).json({ error });
-    }
-});
-
 restaurantsRoute.get('/:id', async (req, res) => {
     try {
         let { id } = req.params;
@@ -48,6 +37,17 @@ restaurantsRoute.post('/find', async (req, res) => {
         res.status(201).json(data);
     } catch (error) {
         res.status(500).json({ error });
+    }
+});
+
+restaurantsRoute.put('/seats', async (req, res) => {
+    try {
+      let { id, seatType, numDiners } = req.body;
+    //   console.log(req.body);
+      let data = await Restaurant.UpdateSeats(id, seatType, numDiners);
+      res.status(200).json(data);
+    } catch (error) {
+      res.status(500).json({ error });
     }
 });
 
