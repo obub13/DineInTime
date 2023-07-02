@@ -5,12 +5,10 @@ import { useState } from 'react';
 
 export default function Order(props) {
 
-    const { restaurants, setFoodType, diners, setDiners, isLoading, updateSeats, LoadRestaurants } = useContext(ContextPage);
+    const { setFoodType, diners, setDiners, isLoading, updateSeats, filteredRestaurants } = useContext(ContextPage);
     const [searchInput, setSearchInput] = useState('');
 
-    LoadRestaurants();
-
-    const filteredRestaurants = restaurants.filter((restaurant) =>
+    const filtered = filteredRestaurants.filter((restaurant) =>
     restaurant.name.toLowerCase().includes(searchInput.toLowerCase()));
 
     const handleReset = () => {
@@ -52,8 +50,8 @@ export default function Order(props) {
       </View>
     ) : (
       <>
-        {filteredRestaurants.length === 0 ? (
-          <View style={styles.container}>
+        {filtered.length === 0 ? (
+        <View style={styles.container}>
         <View style={styles.iconCon}>
           <Image source={require("../assets/icon.png")} style={styles.icon} />
           <Text style={styles.textLogo}>DineInTime</Text>
@@ -71,6 +69,7 @@ export default function Order(props) {
         <View style={styles.container}>
         <View style={styles.iconCon}>
           <Image source={require("../assets/icon.png")} style={styles.icon} />
+          <Text style={styles.textLogo}>DineInTime</Text>
         </View>
         <View style={styles.inputCon}>
           <TextInput
@@ -81,7 +80,7 @@ export default function Order(props) {
           />
         </View>
           <FlatList
-            data={filteredRestaurants}
+            data={filtered}
             keyExtractor={(item) => item._id.toString()}
             renderItem={({ item }) => (
               <View style={styles.restaurantContainer}>
@@ -109,7 +108,7 @@ export default function Order(props) {
             )}
             contentContainerStyle={styles.listContent}
           />
-        </View>
+          </View>
         )}
       </>
     )}
@@ -139,7 +138,7 @@ const styles = StyleSheet.create({
       borderRadius: 10,
       margin: 20,
       padding: 20,
-      height: 70,
+      height: 60,
       justifyContent: "center",
     },
     input: {

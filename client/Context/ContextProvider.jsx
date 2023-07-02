@@ -14,6 +14,7 @@ export default function ContextProvider(props) {
   const [users, setUsers] = useState([]);
   const [foodTypes, setFoodTypes] = useState([]);
   const [restaurants, setRestaurants] = useState([]);
+  const [filteredRestaurants, setFilteredRestaurants] = useState([]);
 
   const [location, setLocation] = useState();
   const [errorMsg, setErrorMsg] = useState();
@@ -124,9 +125,9 @@ export default function ContextProvider(props) {
             } catch (error) {
               throw new Error('Invalid JSON response');
             }
-      
+            console.log(data);
             if (data) {
-              setRestaurants(data);
+              setFilteredRestaurants(data);
               setIsLoading(false);
             }
             
@@ -140,7 +141,7 @@ export default function ContextProvider(props) {
   };
 
   const updateSeats = async (id, seatType, numDiners) => {
-    console.log("client    "  + id, seatType, numDiners);
+    //console.log("client    "  + id, seatType, numDiners);
     try {
       let res = await fetch(`${apiUrl}/api/restaurants/seats`, {
         method: 'PUT',
@@ -208,6 +209,8 @@ export default function ContextProvider(props) {
     isLoading,
     setIsLoading,
     updateSeats,
+    filteredRestaurants, 
+    setFilteredRestaurants
   };
 
   return (

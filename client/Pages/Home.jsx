@@ -14,7 +14,7 @@ export default function Home(props) {
     (async () => {
       try {
 
-      LoadFoodTypes();
+      //LoadFoodTypes();
 
       let { status } = await Location.requestForegroundPermissionsAsync();
       if (status !== "granted") {
@@ -35,7 +35,11 @@ export default function Home(props) {
         let cityName = reverse[0].city;
         console.log(cityName);
         
-        l = await cities.find((c) => c.name === cityName)?.english_name;
+        // l = await cities.find((c) => c.name === cityName)?.english_name;
+        l = await cities.find((c)=>cityName===c.english_name)?.english_name  //?.=setting l to the english name of the city
+        if(l === undefined) {
+          l = await cities.find((c) => c.name === cityName)?.english_name;
+        }
         console.log(l);
         setLocation(l);        
         

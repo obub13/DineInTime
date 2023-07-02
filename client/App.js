@@ -6,6 +6,7 @@ import Page1 from './Pages/Page1';
 import Login from './Pages/Login';
 import Register from './Pages/Register';
 import Home from './Pages/Home';
+import Order from './Pages/Order';
 import ContextProvider from './Context/ContextProvider';
 
 
@@ -19,11 +20,11 @@ const Drawer = createDrawerNavigator();
 //creates the popup hamburger menu with the pages options
 function MyDrawer() {
   return (            //startup page 
-    <Drawer.Navigator initialRouteName="Page1">  
+    <Drawer.Navigator initialRouteName="Login">  
       <Drawer.Screen
-        name="Page1"                       //page title
+        name="Main"                       //page title
         component={Page1}                  //component = page element
-        options={{ drawerLabel: 'Page1' }} //sets menu label of page
+        options={{ drawerLabel: 'Main' }} //sets menu label of page
       />
       <Drawer.Screen
         name="Login"
@@ -39,6 +40,11 @@ function MyDrawer() {
         name="Home"
         component={Home}
         options={{ drawerLabel: 'Home' }}
+      />
+       <Drawer.Screen
+        name="Order"
+        component={Order}
+        options={{ drawerLabel: 'Order' }}
       />
     </Drawer.Navigator>
   );
@@ -65,11 +71,12 @@ export default function App() {
     <ContextProvider>
     <NavigationContainer>
       <MyDrawer>
-      <Stack.Navigator initialRouteName="Page1">
-        <Stack.Screen name="Page1" component={Page1} />
+      <Stack.Navigator initialRouteName="Login">
+        <Stack.Screen name="Main" component={Page1} />
         <Stack.Screen name="Login" component={Login} />
         <Stack.Screen name="Register" component={Register} />
         <Stack.Screen name="Home" component={Home} />
+        <Stack.Screen name="Order" component={Order} />
       </Stack.Navigator>
       </MyDrawer>
   </NavigationContainer>
