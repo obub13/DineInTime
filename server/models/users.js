@@ -39,7 +39,7 @@ class User {
         return await new DB().Insert(User.collection, this);
     }
     static async DeleteUser(id){
-        return await new DB().Delete(User.collection,id)
+        return await new DB().DeleteById(User.collection,id)
     }
 }
 

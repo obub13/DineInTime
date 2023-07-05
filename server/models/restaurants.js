@@ -38,7 +38,7 @@ class Restaurant {
     }
 
     static async DeleteRestaurant(id){
-        return await new DB().Delete(Restaurant.collection,id)
+        return await new DB().DeleteById(Restaurant.collection,id)
     }
 }
 
