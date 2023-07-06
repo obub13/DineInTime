@@ -3,12 +3,17 @@ import { View, Text, Modal, TouchableOpacity, ActivityIndicator, ScrollView } fr
 import { ContextPage } from '../Context/ContextProvider';
 import WebView from 'react-native-webview';
 
-
 //Function to generate background colors
 const generateBackgroundColors = (count) => {
   const colors = [];
+  const hueStart = 180; // Starting hue value for blue-green
+  const hueEnd = 240; // Ending hue value for blue-green
+
   for (let i = 0; i < count; i++) {
-    const color = `hsl(${(i * (360 / count)) % 360}, 70%, 50%)`;
+    const hue = hueStart + ((hueEnd - hueStart) * i) / (count - 3); // Distribute hues between the start and end values
+    const saturation = '80%'; // Adjust the saturation value for desired effect
+    const lightness = '70%'; // Adjust the lightness value for desired effect
+    const color = `hsl(${hue}, ${saturation}, ${lightness})`;
     colors.push(color);
   }
   return colors;
@@ -81,12 +86,23 @@ export default function Charts(props) {
         {
           label: 'Available Seats',
           data: filteredAvailableSeatsData,
-          backgroundColor: '#69b0ee',
+          backgroundColor: '#CDE9FF',
+          borderWidth: 2,
+          borderColor: 'black',
         },
       ],
     },
     options: {
+      indexAxis: 'y',
         plugins: {
+          tooltip: {
+            titleFont: {
+              size: 35
+            },
+            bodyFont: {
+              size: 25
+            },
+          },
           legend: {
             labels :{
                 font: {
@@ -100,21 +116,21 @@ export default function Charts(props) {
           beginAtZero: true,
           title: {
             display: true,
-            text: 'Seats',
+            text: 'Restaurant Name',
             font: {
               size: 30, // Adjust the font size for the y-axis title
             },
-          },
-          ticks: {
-            font: {
-              size: 20
-            }
+            ticks: {
+              font: {
+                size: 20
+              }
+            },          
           },
         },
         x: {
           title: {
             display: true,
-            text: 'Restaurant Name',
+            text: 'Seats',
             font: {
               size: 30, // Adjust the font size for the x-axis title
             },
@@ -161,6 +177,7 @@ export default function Charts(props) {
     return { type: type.name, percentage: parseFloat(percentage.toFixed(2)) };
   });
 
+
   // Prepare data for the doughnut chart
   const chartConfigFood = {
     type: 'doughnut',
@@ -169,17 +186,27 @@ export default function Charts(props) {
       datasets: [
         {
           data: foodTypePercentages.map((item) => item.percentage),
-          backgroundColor: backgroundColors
+          backgroundColor: backgroundColors,
+          borderWidth: 2,
+          borderColor: 'black',
         },
       ],
     },
     options: {
       plugins: {
+        tooltip: {
+          titleFont: {
+            size: 35
+          },
+          bodyFont: {
+            size: 25
+          },
+        },
         legend: {
           labels :{
               font: {
-                size: 30
-              }
+                size: 30,
+              },
           },
           position: 'bottom', // Show the legend at the bottom
         },
@@ -225,7 +252,7 @@ export default function Charts(props) {
             <WebView
               originWhitelist={['*']}
               source={{ html: chartHTML }}
-              style={{ flex: 1 }}
+              style={{ flex: 1, backgroundColor: '#ededed' }}
             />
           </View>
           <View>
@@ -235,7 +262,7 @@ export default function Charts(props) {
             <WebView
               originWhitelist={['*']}
               source={{ html: chartHTMLFood }}
-              style={{ flex: 1 }}
+              style={{ flex: 1, backgroundColor: '#ededed' }}
             />
           </View>
         </View>

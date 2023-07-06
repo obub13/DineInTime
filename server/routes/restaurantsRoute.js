@@ -61,4 +61,15 @@ restaurantsRoute.delete('/delete/:id', async (req, res) => {
     }
 })
 
+restaurantsRoute.post('/orders/:id', async (req, res) =>{
+    try {
+        let { id } = req.params;
+        let { userId, seatType, diners } = req.body;
+        let data = await Restaurant.AddOrder(id, userId, seatType, diners)
+        res.status(200).json(data);
+    } catch (error) {
+        res.status(500).json({error: error.message})
+    }
+})
+
 module.exports = restaurantsRoute;

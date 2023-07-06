@@ -5,7 +5,7 @@ import { sendNotification } from "./PushNotification";
 
 export default function Login(props) {
 
-  const { userName, password, setUserName, setPassword, users, LoadUsers } = useContext(ContextPage);
+  const { userName, password, setUserName, setPassword, users, LoadUsers, setLoginUser } = useContext(ContextPage);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -28,6 +28,7 @@ export default function Login(props) {
        users.forEach(user => {
         if ((userName === user.username || userName === user.email) && password === user.password) {
           foundUser = true;
+          setLoginUser(user)
         }  });
     } 
     console.log(foundUser);

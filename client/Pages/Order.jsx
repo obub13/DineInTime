@@ -5,7 +5,7 @@ import { useState } from 'react';
 
 export default function Order(props) {
 
-    const { setFoodType, diners, setDiners, isLoading, updateSeats, filteredRestaurants } = useContext(ContextPage);
+    const { setFoodType, diners, setDiners, isLoading, updateSeats, filteredRestaurants, } = useContext(ContextPage);
     const [searchInput, setSearchInput] = useState('');
 
     const filtered = filteredRestaurants.filter((restaurant) =>
@@ -34,7 +34,10 @@ export default function Order(props) {
             {
               text: 'Yes',
               onPress: () => {
-               if (id && seatType && numDiners) { updateSeats(id, seatType, numDiners) };
+               if (id && seatType && numDiners) { 
+                updateSeats(id, seatType, numDiners);
+                props.navigation.navigate("Main");
+              };
               },
             },
           ]

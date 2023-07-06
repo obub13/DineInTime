@@ -10,6 +10,7 @@ export default function ContextProvider(props) {
   const [userName, setUserName] = useState();
   const [password, setPassword] = useState();
   const [confirm, setConfirm] = useState();
+  const [loginUser, setLoginUser] = useState();
 
   const [users, setUsers] = useState([]);
   const [foodTypes, setFoodTypes] = useState([]);
@@ -183,8 +184,9 @@ export default function ContextProvider(props) {
         const data = await res.json();
         console.log(data);
         if (data) {
-          sendNotification('Reservation Successful', 'Thank you for the reservation!');
-          //TODO ------------------------------------------------- move the user to another page
+          sendNotification('Reservation Request Send', 'We will keep you informed once your reservation request is approved by the restaurant.');
+          //handle reservation requests
+          AddReservationRequest(id, loginUser._id, seatType, numDiners);
         }
         return data;
       } else {
@@ -196,6 +198,33 @@ export default function ContextProvider(props) {
       console.error('Error updating seats:', error);
     }
   };
+
+  const AddReservationRequest = async(id, userId, seatType, diners)=>{
+    try{
+    let res = await fetch(`${apiUrl}/api/restaurants/orders/${id}`, {
+      method: "POST",
+      body: JSON.stringify({ userId, seatType, diners }),
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
+    if (res.ok) {
+      const text = await res.text();
+      let data;
+      try {
+        data = await JSON.parse(text);
+      } catch (error) {
+        throw new Error('Invalid JSON response');
+      }
+      console.log(data);  
+      return data;
+    } else {
+      throw new Error(`Request failed ${res.status}`);
+    }
+} catch (error) {
+  console.log(error);
+}
+  }
 
 
 
@@ -241,6 +270,9 @@ export default function ContextProvider(props) {
     setFilteredRestaurants,
     deleteUser,
     deleteRestaurants,
+    loginUser,
+    setLoginUser,
+    AddReservationRequest,
   };
 
   return (
