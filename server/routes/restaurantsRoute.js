@@ -6,7 +6,7 @@ restaurantsRoute.get('/', async (req, res) => {
         let data = await Restaurant.FindAllRestaurants();
         res.status(200).json(data);
     } catch (error) {
-        res.status(500).json({ error });
+        res.status(500).json({ error: error.message });
     }
 });
 
@@ -16,17 +16,27 @@ restaurantsRoute.get('/:id', async (req, res) => {
         let data = await Restaurant.FindById(id);
         res.status(200).json(data);
     } catch (error) {
-        res.status(500).json({ error });
+        res.status(500).json({ error: error.message });
+    }
+});
+
+restaurantsRoute.get('/email/:email', async (req, res) => {
+    try {
+        let { email } = req.params;
+        let data = await Restaurant.FindByEmail(email);
+        res.status(200).json(data);
+    } catch (error) {
+        res.status(500).json({ error: error.message });
     }
 });
 
 restaurantsRoute.post('/add', async (req, res) => {
     try {
-        let { name, location, foodType, availableSeats, locationSeats } = req.body;
-        let data = await new Restaurant(name, location, foodType, availableSeats, locationSeats).InsertOne();
+        let { email, phone, name, location, address, foodType, image, availableSeats, locationSeats, inside, outside, bar } = req.body;
+        let data = await new Restaurant(email, phone, name, location, address,foodType, image, availableSeats, locationSeats, inside, outside, bar).InsertOne();
         res.status(201).json(data);
     } catch (error) {
-        res.status(500).json({ error });
+        res.status(500).json({ error: error.message });
     }
 });
 
@@ -36,7 +46,18 @@ restaurantsRoute.post('/find', async (req, res) => {
         let data = await Restaurant.FindRestaurantsForUser(location, foodType, diners);
         res.status(201).json(data);
     } catch (error) {
-        res.status(500).json({ error });
+        res.status(500).json({ error: error.message });
+    }
+});
+
+restaurantsRoute.post('/orders/:id', async (req, res) => {
+    try {
+        let { id } = req.params;
+        let { userId, seatType, diners } = req.body;
+        let data = await Restaurant.AddOrder(id, userId, seatType, diners);
+        res.status(200).json(data);
+    } catch (error) {
+        res.status(500).json({ error: error.message });
     }
 });
 
@@ -47,29 +68,19 @@ restaurantsRoute.put('/seats', async (req, res) => {
       let data = await Restaurant.UpdateSeats(id, seatType, numDiners);
       res.status(200).json(data);
     } catch (error) {
-      res.status(500).json({ error });
+      res.status(500).json({ error: error.message });
     }
 });
 
-restaurantsRoute.delete('/delete/:id', async (req, res) => {
+restaurantsRoute.delete('/delete/:id', async (req, res) =>{
     try {
         let { id } = req.params;
         let data = await Restaurant.DeleteRestaurant(id);
-        res.status(201).json(data)
+        res.status(201).json(data);
     } catch (error) {
-        res.status(500).json({ error: error.message })
+        res.status(500).json({ error : error.message });
     }
-})
+});
 
-restaurantsRoute.post('/orders/:id', async (req, res) =>{
-    try {
-        let { id } = req.params;
-        let { userId, seatType, diners } = req.body;
-        let data = await Restaurant.AddOrder(id, userId, seatType, diners)
-        res.status(200).json(data);
-    } catch (error) {
-        res.status(500).json({error: error.message})
-    }
-})
 
 module.exports = restaurantsRoute;

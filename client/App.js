@@ -8,13 +8,13 @@ import Register from './Pages/Register';
 import Home from './Pages/Home';
 import Order from './Pages/Order';
 import ContextProvider from './Context/ContextProvider';
+import Admin from './Pages/Admin';
+import BusinessRegistration from './Pages/BusinessRegistration';
 
 
 import { useEffect } from 'react';
-
 import { apiUrl } from './utils/api_url';
 import { I18nManager } from 'react-native';
-import Admin from './Pages/Admin';
 
 const Stack = createNativeStackNavigator();
 const Drawer = createDrawerNavigator();
@@ -54,6 +54,10 @@ function MyDrawer() {
       component={Admin}
       // options={{drawerItemStyle: { height: 0 }}} //hides the admin page from menu bar
       />
+      <Drawer.Screen
+      name="BusinessRegistration"
+      component={BusinessRegistration}
+      options={{drawerLabel: 'BusinessRegistration'}}/>
     </Drawer.Navigator>
   );
 }
@@ -86,6 +90,7 @@ export default function App() {
         <Stack.Screen name="Home" component={Home} />
         <Stack.Screen name="Order" component={Order} />
         <Stack.Screen name="Admin" component={Admin}/>
+        <Stack.Screen name="BusinessRegistration" component={BusinessRegistration}/>
       </Stack.Navigator>
       </MyDrawer>
   </NavigationContainer>

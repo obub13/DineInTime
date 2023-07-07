@@ -12,6 +12,18 @@ export default function ContextProvider(props) {
   const [confirm, setConfirm] = useState();
   const [loginUser, setLoginUser] = useState();
 
+  const [emailB, setEmailB] = useState();
+  const [phoneB, setPhoneB] = useState();
+  const [nameB, setNameB] = useState();
+  const [address, setAddress] = useState();
+  const [city, setCity] = useState();
+  const [foodTypeB, setFoodTypeB] = useState();
+  const [imgB, setImgB] = useState();
+  const [availableSeats, setAvailableSeats] = useState();
+  const [inside, setInside] = useState();
+  const [outside, setOutside] = useState();
+  const [bar, setBar] = useState();
+
   const [users, setUsers] = useState([]);
   const [foodTypes, setFoodTypes] = useState([]);
   const [restaurants, setRestaurants] = useState([]);
@@ -79,6 +91,16 @@ export default function ContextProvider(props) {
     }
   };
 
+  const checkEmailBusiness = async (email) => {
+    try {
+      let res = await fetch(`${apiUrl}/api/restaurants/email/${email}`);
+      let data = await res.json();
+      return !!data;
+    } catch (error) {
+      return error;
+    }
+  };
+
   const checkUsername = async (userName) => {
     try {
       let res = await fetch(`${apiUrl}/api/users/username/${userName}`);
@@ -121,7 +143,25 @@ export default function ContextProvider(props) {
     }
   };
 
-  const deleteRestaurants = async (id) => {
+  const addRestaurant = async (business) => {
+    try {
+      let res = await fetch(`${apiUrl}/api/restaurants/add`, {
+        method: "POST",
+        body: JSON.stringify(business),
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+      let data = await res.json();
+      console.log(data);
+    } catch (error) {
+      console.error(error);
+    } finally {
+      LoadRestaurants();
+    }
+  };
+
+  const deleteRestaurant = async (id) => {
     try {
       let res = await fetch(`${apiUrl}/api/restaurants/delete/${id}`, {
         method: "DELETE",
@@ -170,7 +210,6 @@ export default function ContextProvider(props) {
   };
 
   const updateSeats = async (id, seatType, numDiners) => {
-    //console.log("client    "  + id, seatType, numDiners);
     try {
       let res = await fetch(`${apiUrl}/api/restaurants/seats`, {
         method: 'PUT',
@@ -199,46 +238,41 @@ export default function ContextProvider(props) {
     }
   };
 
-  const AddReservationRequest = async(id, userId, seatType, diners)=>{
-    try{
-    let res = await fetch(`${apiUrl}/api/restaurants/orders/${id}`, {
-      method: "POST",
-      body: JSON.stringify({ userId, seatType, diners }),
-      headers: {
-        "Content-Type": "application/json",
-      },
-    });
-    if (res.ok) {
-      const text = await res.text();
-      let data;
-      try {
-        data = await JSON.parse(text);
-      } catch (error) {
-        throw new Error('Invalid JSON response');
-      }
-      console.log(data);  
-      return data;
-    } else {
-      throw new Error(`Request failed ${res.status}`);
+  const AddReservationRequest = async (id, userId, seatType, diners) => {
+    try {
+      let res = await fetch(`${apiUrl}/api/restaurants/orders/${id}`, {
+          method: "POST",
+          body: JSON.stringify({ userId, seatType, diners }),
+          headers: {
+            "Content-Type": "application/json",
+          },
+        });
+        if (res.ok) {
+          const text = await res.text();
+          let data;
+          
+          try {
+            data = await JSON.parse(text);
+          } catch (error) {
+            throw new Error('Invalid JSON response');
+          }
+          console.log(data);  
+          return data;
+        } else {
+          throw new Error(`Request failed ${res.status}`);
+        }
+    } catch (error) {
+        console.log(error);
     }
-} catch (error) {
-  console.log(error);
-}
   }
 
 
-
   const value = {
-    email,
-    setEmail,
-    phone,
-    setPhone,
-    userName,
-    setUserName,
-    password,
-    setPassword,
-    confirm,
-    setConfirm,
+    email, setEmail,
+    phone, setPhone,
+    userName, setUserName,
+    password, setPassword,
+    confirm, setConfirm,
     addUser,
     LoadUsers,
     LoadFoodTypes,
@@ -246,33 +280,35 @@ export default function ContextProvider(props) {
     users,
     checkEmail,
     checkUsername,
-    location,
-    setLocation,
-    errorMsg,
-    setErrorMsg,
-    foodType,
-    setFoodType,
-    diners,
-    setDiners,
-    foodListVisible,
-    setFoodListVisible,
-    dinersListVisible, 
-    setDinersListVisible,
+    location,setLocation,
+    errorMsg,setErrorMsg,
+    foodType,setFoodType,
+    diners,setDiners,
+    foodListVisible,setFoodListVisible,
+    dinersListVisible, setDinersListVisible,
     foodTypes,
     dinersList,
-    restaurants,
-    setRestaurants,
+    restaurants,setRestaurants,
     findRestaurants,
-    isLoading,
-    setIsLoading,
+    isLoading,setIsLoading,
     updateSeats,
-    filteredRestaurants, 
-    setFilteredRestaurants,
+    filteredRestaurants, setFilteredRestaurants,
     deleteUser,
-    deleteRestaurants,
-    loginUser,
-    setLoginUser,
-    AddReservationRequest,
+    deleteRestaurant,
+    loginUser, setLoginUser,
+    emailB, setEmailB,
+    phoneB, setPhoneB,
+    nameB, setNameB,
+    address, setAddress,
+    city, setCity,
+    foodTypeB, setFoodTypeB,
+    imgB, setImgB,
+    availableSeats, setAvailableSeats,
+    inside, setInside,
+    outside, setOutside,
+    bar, setBar,
+    addRestaurant,
+    checkEmailBusiness,
   };
 
   return (

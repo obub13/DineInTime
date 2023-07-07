@@ -1,4 +1,4 @@
-import { View, Text, Button, ScrollView, Image, StyleSheet, TouchableOpacity, FlatList, ActivityIndicator } from 'react-native';
+import { View, Text, Button, Modal, ScrollView, Image, StyleSheet, TouchableOpacity, FlatList, ActivityIndicator } from 'react-native';
 import React, { useContext, useState } from 'react';
 import { ContextPage } from '../Context/ContextProvider';
 import { useEffect } from 'react';
@@ -14,7 +14,6 @@ export default function Page1(props) {
     LoadFoodTypes();
   }, []);
   
-
   const renderRestaurants = (foodType) => {
     LoadRestaurants();
     const filteredRestaurants = restaurants.filter((restaurant) => restaurant.foodType === foodType);
@@ -67,10 +66,10 @@ export default function Page1(props) {
       </View>
     );
   };
- //overscrollmode=never fixed the crash when scrolling to the maximum heigh(up/down) of the page.
+
   return (
     <View style={styles.container}>
-    <ScrollView keyboardShouldPersistTaps="handled" overScrollMode='never' style={{ flex: 1 }}> 
+    <ScrollView keyboardShouldPersistTaps="handled" overScrollMode='never' style={{flex: 1}}>
         <View style={styles.iconCon}>
           <Image source={require("../assets/icon.png")} style={styles.icon}/>
           <Text style={styles.text}>DineInTime</Text>
@@ -88,14 +87,13 @@ export default function Page1(props) {
             showsHorizontalScrollIndicator={false}
             contentContainerStyle={{ paddingVertical: 10, flexDirection: "row" }}
             keyExtractor={(item) => item._id.toString()}
-            renderItem={renderItem}
-            />
+            renderItem={renderItem}/>
           {selectedFoodType && (
             <View>
               {renderRestaurants(selectedFoodType)}
             </View>
           )}
-        <Charts/>
+          <Charts />
         </View>
     </ScrollView>
     </View>
@@ -175,4 +173,3 @@ const styles = StyleSheet.create({
     marginBottom: 5,
 },
 });
-

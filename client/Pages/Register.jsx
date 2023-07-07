@@ -130,6 +130,9 @@ export default function Register(props) {
        <View style={styles.iconCon}>
             <Image source={require("../assets/icon.png")} style={styles.icon}/>
             <Text style={styles.text}>DineInTime</Text>
+            <TouchableOpacity>
+              <Text style={styles.reg} onPress={()=>props.navigation.navigate("BusinessRegistration")}>Business owner? Click here</Text>
+            </TouchableOpacity>
           </View>
           <View style={styles.inputCon}>
           <TextInput
@@ -167,7 +170,6 @@ export default function Register(props) {
               <MaterialIcons name={isPasswordVisible ? 'visibility-off' : 'visibility'} size={25} color="#A0A0A0" />
             </TouchableOpacity>
             </View>
-
             <View style={styles.pass}>
             <TextInput style={{top:5}} 
               placeholder="Verify"
@@ -178,7 +180,6 @@ export default function Register(props) {
             <TouchableOpacity style={{ position: 'absolute', top: '25%', right: 10 }} onPress={() => setIsVerifyVisible(!isVerifyVisible)}>
               <MaterialIcons name={isVerifyVisible ? 'visibility-off' : 'visibility'} size={25} color="#A0A0A0" />
             </TouchableOpacity>
-            
             </View>
             </View>
             <TouchableOpacity style={styles.btn} onPress={handleRegister}>
@@ -222,6 +223,7 @@ const styles = StyleSheet.create({
       margin: 30,
       padding: 20,
       marginTop: 10,
+      marginBottom: 0,
       height: '100%',
       justifyContent: "center",
     },
@@ -299,5 +301,6 @@ const styles = StyleSheet.create({
       alignSelf: "center",
       fontSize: 18,
       color: "#D9D9D9",
+      margin: 5,
     },
   });
