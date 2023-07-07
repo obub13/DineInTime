@@ -6,7 +6,7 @@ usersRoute.get('/', async (req, res) => {
         let data = await User.FindAllUsers();
         res.status(200).json(data);
     } catch (error) {
-        res.status(500).json({ error });
+        res.status(500).json({ error:error.message });
     }
 });
 
@@ -16,7 +16,7 @@ usersRoute.get('/:id', async (req, res) => {
         let data = await User.FindById(id);
         res.status(200).json(data);
     } catch (error) {
-        res.status(500).json({ error });
+        res.status(500).json({ error:error.message });
     }
 });
 
@@ -26,7 +26,7 @@ usersRoute.get('/email/:email', async (req, res) => {
         let data = await User.FindByEmail(email);
         res.status(200).json(data);
     } catch (error) {
-        res.status(500).json({ error });
+        res.status(500).json({ error:error.message });
     }
 });
 
@@ -36,7 +36,7 @@ usersRoute.get('/username/:username', async (req, res) => {
         let data = await User.FindByUserName(username);
         res.status(200).json(data);
     } catch (error) {
-        res.status(500).json({ error });
+        res.status(500).json({ error:error.message });
     }
 })
 
@@ -46,7 +46,7 @@ usersRoute.post('/add', async (req, res) => {
         let data = await new User(email, phone, username, image, password, verify).InsertOne();
         res.status(201).json(data);
     } catch (error) {
-        res.status(500).json({ error });
+        res.status(500).json({ error:error.message });
     }
 });
 
