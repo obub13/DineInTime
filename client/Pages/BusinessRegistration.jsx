@@ -49,6 +49,7 @@ export default function BusinessRegistration(props) {
                 isEmailOccupied = false;
             }
             else {
+              alert(`Your registeration has been submitted, you will be notified soon.`)
                 addRestaurant(business);
             }
         }

@@ -4,7 +4,7 @@ import { ContextPage } from '../Context/ContextProvider';
 
 export default function Admin(props) {
 
-    const { users, restaurants, LoadRestaurants, deleteUser, deleteRestaurants } = useContext(ContextPage);
+    const { users, restaurants, LoadRestaurants, deleteUser, deleteRestaurant } = useContext(ContextPage);
     const [usersListVisible, setUsersListVisible] = useState(false);
     const [restaurantsListVisible, setRestaurantsListVisible] = useState(false);
 
@@ -32,7 +32,7 @@ export default function Admin(props) {
     );
   };
 
-  const handleDeleteRestaurants = (id) => {
+  const handleDeleteRestaurant = (id) => {
     // Handle delete action for the user with the specified id
     console.log(`Delete user with ID: ${id}`);
     // show a confirmation alert before deleting the user
@@ -41,7 +41,7 @@ export default function Admin(props) {
       'Are you sure you want to delete this business?',
       [
         { text: 'Cancel', style: 'cancel' },
-        { text: 'Delete', style: 'destructive', onPress: () => deleteRestaurants(id) },
+        { text: 'Delete', style: 'destructive', onPress: () => deleteRestaurant(id) },
       ],
       { cancelable: true }
     );
@@ -101,7 +101,7 @@ export default function Admin(props) {
       <TouchableOpacity onPress={() => handleEditUser(item._id)}>
         <Text style={{ color: 'blue', marginRight: 10 }}>Edit</Text>
       </TouchableOpacity>
-      <TouchableOpacity onPress={() => handleDeleteRestaurants(item._id)}>
+      <TouchableOpacity onPress={() => handleDeleteRestaurant(item._id)}>
         <Text style={{ color: 'red' }}>Delete</Text>
       </TouchableOpacity>
     </View>
