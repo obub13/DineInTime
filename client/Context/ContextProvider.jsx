@@ -111,6 +111,23 @@ export default function ContextProvider(props) {
     }
   };
 
+  // const addUser = async (user) => {
+  //   try {
+  //     let res = await fetch(`${apiUrl}/api/users/add`, {
+  //       method: "POST",
+  //       body: JSON.stringify(user),
+  //       headers: {
+  //         "Content-Type": "application/json",
+  //       },
+  //     });
+  //     let data = await res.json();
+  //     console.log( 'addUser context',data);
+  //   } catch (error) {
+  //     console.log({error:error.message});
+  //   } finally {
+  //     LoadUsers();
+  //   }
+  // };
   const addUser = async (user) => {
     try {
       let res = await fetch(`${apiUrl}/api/users/add`, {
@@ -120,10 +137,15 @@ export default function ContextProvider(props) {
           "Content-Type": "application/json",
         },
       });
+  
+      if (!res.ok) {
+        throw new Error(`Request failed with status ${res.status}`);
+      }
+  
       let data = await res.json();
-      console.log( 'addUser context',data);
+      console.log('addUser context', data);
     } catch (error) {
-      console.log({error:error.message});
+      console.error("Error in addUser:", error);
     } finally {
       LoadUsers();
     }
