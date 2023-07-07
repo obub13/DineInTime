@@ -7,7 +7,7 @@
 export const railwayURL = 'https://dineintime-production.up.railway.app';
 //https://dineintime.onrender.com
 // export const apiUrl = 'https://dineintime.onrender.com';
-export const apiUrl ='https://dineintimefull.onrender.com';
+export const apiUrl = 'https://dineintimefull.onrender.com';
 //https://dineintime.cyclic.app
 export const DATA_API = 'https://eu-central-1.aws.data.mongodb-api.com/app/data-ghtpu/endpoint/data/v1';
 
