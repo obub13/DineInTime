@@ -53,7 +53,7 @@ export default function Register(props) {
   
     const onPictureSaved = photo => {
       setImgSrc(photo.uri);
-      console.log(imgSrc);
+      console.log('onPicture func in Register.jsx',imgSrc);
       setShowCamera(false);
     }
 
@@ -96,6 +96,7 @@ export default function Register(props) {
         }
         else {
           if (password === confirm) {  
+            console.log('Success signup - register jsx');
             addUser(user);
             props.navigation.navigate("Login");
           } else { 
@@ -104,7 +105,7 @@ export default function Register(props) {
         }
 
       } else {
-        alert('Invalid Error')
+        alert('Invalid Error - registerjsx')
       }
 
        isEmailOccupied = await checkEmail(email);

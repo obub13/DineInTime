@@ -32,10 +32,14 @@ export default function Login(props) {
         }  });
     } 
     console.log(foundUser);
-    if (userName === "Admin1" || userName === "Admin2") {
-      props.navigation.navigate("Admin");
-    } else {
-      props.navigation.navigate("Main");
+    if(foundUser){
+      if (userName === "Admin1" || userName === "Admin2") {
+        props.navigation.navigate("Admin");
+      } else {
+        props.navigation.navigate("Main");
+      }
+    }else{
+      alert('User was not found.')  
     }
         
     

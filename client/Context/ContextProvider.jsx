@@ -57,7 +57,7 @@ export default function ContextProvider(props) {
       let data = await res.json();
       setUsers(data);
     } catch (error) {
-      console.log({ error } );
+      console.log('LoadUsersContext',{ error:error.message } );
     }
   };
 
@@ -121,9 +121,9 @@ export default function ContextProvider(props) {
         },
       });
       let data = await res.json();
-      console.log(data);
+      console.log( 'addUser context',data);
     } catch (error) {
-      console.error(error);
+      console.log({error:error.message});
     } finally {
       LoadUsers();
     }
