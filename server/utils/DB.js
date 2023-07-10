@@ -21,7 +21,7 @@ class DB {
     }
 
  
-  async SendEmail(id, email, name){
+  async SendEmail(email, name){
 let mailTransporter = nodemailer.createTransport({
     service: 'gmail',
     auth: {
@@ -32,7 +32,7 @@ let mailTransporter = nodemailer.createTransport({
  
 let mailDetails = {
     from: this.emailUsername,
-    to: 'ofekbub@gmail.com',
+    to: email,
     subject: `Test mail ${name} , email ${email}`,
     text: 'Node.js testing mail for GeeksforGeeks'
 };
@@ -41,7 +41,7 @@ mailTransporter.sendMail(mailDetails, function(err, data) {
     if(err) {
         console.log('Error Occurs', err.message);
     } else {
-        console.log('Email sent successfully', data);
+        console.log('Email sent successfully', data.json());
     }
 });
  }
@@ -182,8 +182,7 @@ mailTransporter.sendMail(mailDetails, function(err, data) {
     async ApprovedRestaurant(collection, id, email, name) {
         try {
             await this.client.connect();  
-            console.log('Approved DB before sendEmail func');  
-            this.SendEmail(id, email, name)
+            this.SendEmail(email, name)
             // const transporter = nodemailer.createTransport({
             //     service: this.emailService,
             //     auth: {
@@ -207,7 +206,6 @@ mailTransporter.sendMail(mailDetails, function(err, data) {
             //       console.log('Email sent:', info.response);
             //     }
             //   });
-            console.log('Approved DB AFTER sendEmail func');  
             return await this.client.db(this.dbName).collection(collection).updateOne(
                 { _id: new ObjectId(id) },
                 { $set: {approved : true}}
