@@ -21,7 +21,7 @@ class DB {
     }
 
  
-  async SendEmail(email, name){
+   SendEmail(email, name){
 let mailTransporter = nodemailer.createTransport({
     service: 'gmail',
     auth: {
