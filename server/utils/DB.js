@@ -1,14 +1,22 @@
 const { MongoClient, ObjectId } = require('mongodb');
 require('dotenv').config();
 
+const nodemailer = require('nodemailer');
+
 class DB {
 
     client;
     dbName;
+    emailService;
+    emailUsername;
+    emailPassword;
 
     constructor() {
         this.client = new MongoClient(process.env.DB_URI);
         this.dbName = process.env.DB_NAME;
+        this.emailService = process.env.EMAIL_SERVICE;
+        this.emailUsername = process.env.EMAIL_USERNAME;
+        this.emailPassword = process.env.EMAIL_PASSWORD;
     }
 
     async FindAll(collection, query = {}, projection = {}) {
@@ -141,6 +149,43 @@ class DB {
             return error
         }finally{
             await this.client.close()
+        }
+    }
+
+    async ApprovedRestaurant(collection, id, email, name) {
+        try {
+            await this.client.connect();    
+            const transporter = nodemailer.createTransport({
+                service: this.emailService,
+                auth: {
+                  user: this.emailUsername,
+                  pass: this.emailPassword,
+                },
+              });
+              // Compose the email message
+              const mailOptions = {
+                from: this.emailService,
+                to: email,
+                subject: `Hello  ${name} from Node.js`,
+                text: `This is a test email sent from Node.js using Gmail! `,
+              };
+              
+              // Send the email
+              transporter.sendMail(mailOptions, (error, info) => {
+                if (error) {
+                  console.error('Error sending email:', error.message);
+                } else {
+                  console.log('Email sent:', info.response);
+                }
+              });
+            return await this.client.db(this.dbName).collection(collection).updateOne(
+                { _id: new ObjectId(id) },
+                { $set: {approved : true}}
+                );
+        } catch (error) {
+            return error;
+        } finally {
+            await this.client.close();
         }
     }
 }

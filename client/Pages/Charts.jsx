@@ -248,7 +248,7 @@ export default function Charts(props) {
             </TouchableOpacity>
           </View>
           {renderCityDropdown()}
-          <View style={{ height: 200 }}>
+          <View style={{ height: 175 }}>
             <WebView
               originWhitelist={['*']}
               source={{ html: chartHTML }}
@@ -258,7 +258,7 @@ export default function Charts(props) {
           <View>
             <Text style={{alignSelf: 'center', margin: 15, fontSize: 20, fontWeight: 'bold'}}>Food Types Percentage</Text>
           </View>
-          <View style={{ height: 400 }}>
+          <View style={{ height: 350 }}>
             <WebView
               originWhitelist={['*']}
               source={{ html: chartHTMLFood }}

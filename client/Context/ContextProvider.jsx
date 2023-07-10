@@ -23,6 +23,8 @@ export default function ContextProvider(props) {
   const [inside, setInside] = useState();
   const [outside, setOutside] = useState();
   const [bar, setBar] = useState();
+  const [passwordB, setPasswordB] = useState()
+  const [confirmB, setConfirmB] = useState()
 
   const [users, setUsers] = useState([]);
   const [foodTypes, setFoodTypes] = useState([]);
@@ -175,6 +177,27 @@ export default function ContextProvider(props) {
     }
   };
 
+  const changeApprovedRestaurant = async(id, email, name)=>{
+    try {
+      console.log('changedapprovedrest starting func');
+      let res = await fetch(`${apiUrl}/api/restaurants/approved/${id}`, {
+        method:"PUT",
+        body:JSON.stringify({email,name}),
+        headers: {
+          "Content-Type": "application/json",
+        },
+      })
+      console.log('after fetching from api', res);
+      let data = await res.json();
+      console.log(data);
+    } catch (error) {
+      console.error(error)
+    }finally{
+      LoadRestaurants();
+    }
+  }
+
+
 
   const findRestaurants = async (location, foodType, diners) => {
     try {
@@ -307,8 +330,11 @@ export default function ContextProvider(props) {
     inside, setInside,
     outside, setOutside,
     bar, setBar,
+    passwordB, setPasswordB,
+    confirmB, setConfirmB,
     addRestaurant,
     checkEmailBusiness,
+    changeApprovedRestaurant,
   };
 
   return (

@@ -5,10 +5,11 @@ import { useState } from 'react';
 
 export default function Order(props) {
 
-    const { setFoodType, diners, setDiners, isLoading, updateSeats, filteredRestaurants, } = useContext(ContextPage);
+    const { setFoodType, diners, setDiners, isLoading, updateSeats, filteredRestaurants } = useContext(ContextPage);
     const [searchInput, setSearchInput] = useState('');
 
     const filtered = filteredRestaurants.filter((restaurant) =>
+    restaurant.approved === true && 
     restaurant.name.toLowerCase().includes(searchInput.toLowerCase()));
 
     const handleReset = () => {
@@ -36,7 +37,7 @@ export default function Order(props) {
               onPress: () => {
                if (id && seatType && numDiners) { 
                 updateSeats(id, seatType, numDiners);
-                props.navigation.navigate("Main");
+                props.navigation.navigate("Main");               
               };
               },
             },
@@ -55,9 +56,17 @@ export default function Order(props) {
       <>
         {filtered.length === 0 ? (
         <View style={styles.container}>
-        <View style={styles.iconCon}>
+        <View>
           <Image source={require("../assets/icon.png")} style={styles.icon} />
           <Text style={styles.textLogo}>DineInTime</Text>
+        </View>
+        <View style={styles.inputCon}>
+          <TextInput
+            style={styles.input}
+            placeholder="Search restaurants"
+            onChangeText={setSearchInput}
+            value={searchInput}
+          />
         </View>
         <View style={{flex: 1.5}}>
             <Text style={styles.text}>
@@ -70,7 +79,7 @@ export default function Order(props) {
           </View>
         ) : (
         <View style={styles.container}>
-        <View style={styles.iconCon}>
+        <View>
           <Image source={require("../assets/icon.png")} style={styles.icon} />
           <Text style={styles.textLogo}>DineInTime</Text>
         </View>
@@ -87,8 +96,10 @@ export default function Order(props) {
             keyExtractor={(item) => item._id.toString()}
             renderItem={({ item }) => (
               <View style={styles.restaurantContainer}>
+                <View style={{flex: 1, width: '100%', height: 100}}>
+                  <Image source={{ uri: item.image }} style={styles.restImg} />
+                </View>
                 <Text style={styles.name}>{item.name}</Text>
-                {/* <Image source={{ uri: item.image }} style={styles.image} /> */}
                 <Text style={styles.address}>{item.location}</Text>
                 <Text style={styles.seatContainer}>
                   {item.locationSeats.inside > 0 && (
@@ -131,11 +142,6 @@ const styles = StyleSheet.create({
       height: 100,
       alignSelf: "center",
     },
-    iconCon: {
-        flex: 1,
-        width: "100%",
-        height: "100%",
-    },
     inputCon: {
       backgroundColor: "#D9D9D9",
       borderRadius: 10,
@@ -162,6 +168,9 @@ const styles = StyleSheet.create({
       fontWeight: 700,
     },
       restaurantContainer: {
+        flex: 2,
+        width: '85%',
+        alignSelf: 'center',   
         flexDirection: 'column',
         alignItems: 'center',
         backgroundColor: '#838383',
@@ -221,5 +230,12 @@ const styles = StyleSheet.create({
       title: {
         alignSelf: "center",
         fontSize: 20,
+      },
+      restImg: {
+        flex: 1,
+        width: '100%',
+        height: '100%',
+        resizeMode: 'cover',
+        borderRadius: 5,
       },
 });
