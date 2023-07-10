@@ -39,7 +39,7 @@ let mailDetails = {
  
 mailTransporter.sendMail(mailDetails, function(err, data) {
     if(err) {
-        console.log('Error Occurs');
+        res.status(404).json('sendMail error',{ error: error.message })
     } else {
         console.log('Email sent successfully');
     }
