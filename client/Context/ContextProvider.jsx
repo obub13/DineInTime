@@ -181,13 +181,13 @@ export default function ContextProvider(props) {
     try {
       console.log('changedapprovedrest starting func id , email, name', id, email, name);
       let res = await fetch(`${apiUrl}/api/restaurants/approved/${id}`, {
-        method:"PUT",
+        method:"POST",
         body:JSON.stringify({email,name}),
         headers: {
           "Content-Type": "application/json",
         },
       })
-      console.log('after fetching from api', res);
+      console.log('after fetching from api', JSON.stringify(res));
       let data = await res.json();
       console.log(data, 'data log');
     } catch (error) {
@@ -289,6 +289,7 @@ export default function ContextProvider(props) {
     }
   }
 
+  
 
   const value = {
     email, setEmail,

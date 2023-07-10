@@ -72,7 +72,7 @@ restaurantsRoute.put('/seats', async (req, res) => {
     }
 });
 
-restaurantsRoute.put('/approved/:id', async(req,res)=>{
+restaurantsRoute.post('/approved/:id', async(req,res)=>{
     try {
         let { id } = req.params;
         let {email, name} = req.body;
