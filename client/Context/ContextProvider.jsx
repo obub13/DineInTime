@@ -177,12 +177,12 @@ export default function ContextProvider(props) {
     }
   };
 
-  const changeApprovedRestaurant = async(id, email, name)=>{
+  const changeApprovedRestaurant = async(id)=>{
     try {
-      console.log('changedapprovedrest starting func id , email, name', id, email, name);
+      console.log('changedapprovedrest starting func id', id);
       let res = await fetch(`${apiUrl}/api/restaurants/approved/${id}`, {
-        method:"POST",
-        body:JSON.stringify({email,name}),
+        method:"PUT",
+        // body:JSON.stringify({email,name}),
         headers: {
           "Content-Type": "application/json",
         },
@@ -191,7 +191,7 @@ export default function ContextProvider(props) {
       let data = await res.json();
       console.log(data, 'data log');
     } catch (error) {
-      console.log('context errorrrrrrrrrrrrrrrrr', error.message)
+      console.log('context error', error.message)
     }finally{
       LoadRestaurants();
     }

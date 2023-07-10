@@ -46,9 +46,9 @@ export default function BusinessRegistration(props) {
                 bar: parseInt(bar) 
             },
             password: passwordB,
-            verify: confirmB        
+            verify: confirmB
         }
-
+        
         let isEmailOccupied = await checkEmailBusiness(emailB);
 
         if (emailB && phoneB && nameB && city && address && foodTypeB && imgB && availableSeats && inside && outside && bar && passwordB && confirmB) {
