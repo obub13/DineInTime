@@ -182,30 +182,7 @@ mailTransporter.sendMail(mailDetails, function(err, data) {
     async ApprovedRestaurant(collection, id, email, name) {
         try {
             await this.client.connect();  
-            this.SendEmail(email, name)
-            // const transporter = nodemailer.createTransport({
-            //     service: this.emailService,
-            //     auth: {
-            //       user: this.emailUsername,
-            //       pass: this.emailPassword,
-            //     },
-            //   });
-            //   // Compose the email message
-            //   const mailOptions = {
-            //     from: this.emailService,
-            //     to: email,
-            //     subject: `Hello  ${name} from Node.js`,
-            //     text: `This is a test email sent from Node.js using Gmail! `,
-            //   };
-              
-            //   // Send the email
-            //   transporter.sendMail(mailOptions, (error, info) => {
-            //     if (error) {
-            //       console.log('Error sending email:', error.message);
-            //     } else {
-            //       console.log('Email sent:', info.response);
-            //     }
-            //   });
+            // this.SendEmail(email, name)
             return await this.client.db(this.dbName).collection(collection).updateOne(
                 { _id: new ObjectId(id) },
                 { $set: {approved : true}}
