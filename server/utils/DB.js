@@ -179,7 +179,7 @@ mailTransporter.sendMail(mailDetails, function(err, data) {
         }
     }
 
-    async ApprovedRestaurant(collection, id, email, name) {
+    async ApprovedRestaurant(collection, id) {
         try {
             await this.client.connect();  
             // this.SendEmail(email, name)
