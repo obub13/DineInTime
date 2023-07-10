@@ -189,7 +189,7 @@ export default function ContextProvider(props) {
       })
       console.log('after fetching from api', res);
       let data = await res.json();
-      console.log(data);
+      console.log(data, 'data log');
     } catch (error) {
       console.error(error)
     }finally{
