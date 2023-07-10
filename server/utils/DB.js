@@ -173,7 +173,7 @@ class DB {
               // Send the email
               transporter.sendMail(mailOptions, (error, info) => {
                 if (error) {
-                  console.error('Error sending email:', error.message);
+                  console.log('Error sending email:', error.message);
                 } else {
                   console.log('Email sent:', info.response);
                 }
@@ -183,7 +183,7 @@ class DB {
                 { $set: {approved : true}}
                 );
         } catch (error) {
-            return error;
+            return error.message;
         } finally {
             await this.client.close();
         }
