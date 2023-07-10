@@ -10,6 +10,7 @@ class DB {
     emailService;
     emailUsername;
     emailPassword;
+    
 
     constructor() {
         this.client = new MongoClient(process.env.DB_URI);
@@ -18,6 +19,32 @@ class DB {
         this.emailUsername = process.env.EMAIL_USERNAME;
         this.emailPassword = process.env.EMAIL_PASSWORD;
     }
+
+ 
+ async SendEmail(){
+let mailTransporter = nodemailer.createTransport({
+    service: 'gmail',
+    auth: {
+        user: this.emailUsername,
+        pass: this.emailPassword
+    }
+});
+ 
+let mailDetails = {
+    from: this.emailUsername,
+    to: 'ofekbub@gmail.com',
+    subject: 'Test mail',
+    text: 'Node.js testing mail for GeeksforGeeks'
+};
+ 
+mailTransporter.sendMail(mailDetails, function(err, data) {
+    if(err) {
+        console.log('Error Occurs');
+    } else {
+        console.log('Email sent successfully');
+    }
+});
+ }
 
     async FindAll(collection, query = {}, projection = {}) {
         try {
@@ -155,29 +182,30 @@ class DB {
     async ApprovedRestaurant(collection, id, email, name) {
         try {
             await this.client.connect();    
-            const transporter = nodemailer.createTransport({
-                service: this.emailService,
-                auth: {
-                  user: this.emailUsername,
-                  pass: this.emailPassword,
-                },
-              });
-              // Compose the email message
-              const mailOptions = {
-                from: this.emailService,
-                to: email,
-                subject: `Hello  ${name} from Node.js`,
-                text: `This is a test email sent from Node.js using Gmail! `,
-              };
+            this.SendEmail()
+            // const transporter = nodemailer.createTransport({
+            //     service: this.emailService,
+            //     auth: {
+            //       user: this.emailUsername,
+            //       pass: this.emailPassword,
+            //     },
+            //   });
+            //   // Compose the email message
+            //   const mailOptions = {
+            //     from: this.emailService,
+            //     to: email,
+            //     subject: `Hello  ${name} from Node.js`,
+            //     text: `This is a test email sent from Node.js using Gmail! `,
+            //   };
               
-              // Send the email
-              transporter.sendMail(mailOptions, (error, info) => {
-                if (error) {
-                  console.log('Error sending email:', error.message);
-                } else {
-                  console.log('Email sent:', info.response);
-                }
-              });
+            //   // Send the email
+            //   transporter.sendMail(mailOptions, (error, info) => {
+            //     if (error) {
+            //       console.log('Error sending email:', error.message);
+            //     } else {
+            //       console.log('Email sent:', info.response);
+            //     }
+            //   });
             return await this.client.db(this.dbName).collection(collection).updateOne(
                 { _id: new ObjectId(id) },
                 { $set: {approved : true}}

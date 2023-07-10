@@ -191,7 +191,7 @@ export default function ContextProvider(props) {
       let data = await res.json();
       console.log(data, 'data log');
     } catch (error) {
-      console.error('context errorrrrrrrrrrrrrrrrr',error.message)
+      console.log('context errorrrrrrrrrrrrrrrrr',error.message)
     }finally{
       LoadRestaurants();
     }
