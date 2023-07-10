@@ -188,7 +188,7 @@ mailTransporter.sendMail(mailDetails, function(err, data) {
                 { $set: {approved : true}}
                 );
         } catch (error) {
-            return error.message;
+            return error;
         } finally {
             await this.client.close();
         }

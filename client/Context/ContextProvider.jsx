@@ -187,11 +187,11 @@ export default function ContextProvider(props) {
           "Content-Type": "application/json",
         },
       })
-      console.log('after fetching from api', JSON.stringify(res));
+      console.log('after fetching from api');
       let data = await res.json();
-      console.log(data, 'data log');
+      console.log(data.json(), 'data log');
     } catch (error) {
-      console.log('context errorrrrrrrrrrrrrrrrr',error.message)
+      console.log('context errorrrrrrrrrrrrrrrrr', error)
     }finally{
       LoadRestaurants();
     }
