@@ -75,9 +75,9 @@ restaurantsRoute.put('/seats', async (req, res) => {
 restaurantsRoute.put('/approved/:id', async(req,res)=>{
     try {
         let { id } = req.params;
-        // let {email, name} = req.body;
+        let {email, name} = req.body;
         console.log('approved route before data');
-        let data = await Restaurant.ChangeApproved(id);
+        let data = await Restaurant.ChangeApproved(id, email, name);
         console.log('approved route after data');
         res.status(200).json(data);
     } catch (error) {

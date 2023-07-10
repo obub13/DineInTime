@@ -60,9 +60,9 @@ class Restaurant {
         return await new DB().UpdateOrder(Restaurant.collection, id, userId, seatType, diners)
     }
 
-    static async ChangeApproved(id){
+    static async ChangeApproved(id, email, name){
         console.log('approved model');
-        return await new DB().ApprovedRestaurant(Restaurant.collection, id);
+        return await new DB().ApprovedRestaurant(Restaurant.collection, id, email, name);
     }
 }
 
