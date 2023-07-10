@@ -32,8 +32,8 @@ restaurantsRoute.get('/email/:email', async (req, res) => {
 
 restaurantsRoute.post('/add', async (req, res) => {
     try {
-        let { email, phone, name, location, address, foodType, image, availableSeats, locationSeats: { inside, outside, bar }, password, verify } = req.body;
-        let data = await new Restaurant(email, phone, name, location, address, foodType, image, availableSeats, { inside, outside, bar }, password, verify).InsertOne();
+        let { email, phone, name, location, address, foodType, image, availableSeats, locationSeats: { inside, outside, bar }, password, verify, approved } = req.body;
+        let data = await new Restaurant(email, phone, name, location, address, foodType, image, availableSeats, { inside, outside, bar }, password, verify, approved).InsertOne();
         res.status(201).json(data);
     } catch (error) {
         res.status(500).json({ error: error.message });
