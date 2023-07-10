@@ -13,6 +13,7 @@ class Restaurant {
     locationSeats;
     password;
     verify;
+    approved=false;
 
     constructor(email, phone, name, location, address, foodType, image, availableSeats, locationSeats, password, verify) {
         this.email = email;
