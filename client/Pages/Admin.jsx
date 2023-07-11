@@ -22,7 +22,7 @@ export default function Admin(props) {
       'Are you sure you want to edit this user?',
       [
         { text: 'Cancel', style: 'cancel' },
-        { text: 'Edit', style: 'destructive', onPress: () =>editUser(id) },
+        { text: 'Edit', style: 'destructive', onPress: () => editUser(id) },
       ],
       { cancelable: true }
     )
@@ -152,7 +152,7 @@ export default function Admin(props) {
             </View>
           </View>
     
-          <TouchableOpacity onPress={() => handleApprovedRestaurant(item._id, item.email, item.name)}>
+          <TouchableOpacity onPress={() => handleApprovedRestaurant(item._id)}>
           <MaterialIcons name="add" size={40} color="white" />
           </TouchableOpacity>
           <TouchableOpacity onPress={() => handleDeleteRestaurant(item._id)}>
@@ -202,6 +202,7 @@ export default function Admin(props) {
         <FlatList
           data={restaurants}
           showsVerticalScrollIndicator={false}
+          contentContainerStyle={{ paddingBottom: 80 }}
           keyExtractor={(item) => item._id}
           renderItem={renderRestaurantItem}
           ListEmptyComponent={() => <Text>No restaurants found</Text>}

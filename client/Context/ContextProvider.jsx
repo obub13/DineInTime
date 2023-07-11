@@ -203,7 +203,7 @@ export default function ContextProvider(props) {
 
   const editUser = async (id) => {
     try {
-      console.log('changedapprovedrest starting func id', id);
+      console.log('editUser context', id);
       let res = await fetch(`${apiUrl}/api/users/edit/${id}`, {
         method:"PUT",
         headers: {
