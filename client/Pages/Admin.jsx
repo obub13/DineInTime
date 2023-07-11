@@ -74,7 +74,7 @@ export default function Admin(props) {
     setRestaurantListVisible(true);
   }
 
-  const handleApprovedRestaurant = (id) => {
+  const handleApprovedRestaurant = (id, email, name) => {
     console.log(`Add restaurant with ID: ${id}`);
     // show a confirmation alert before approving the restaurant
     Alert.alert(
@@ -152,7 +152,7 @@ export default function Admin(props) {
             </View>
           </View>
     
-          <TouchableOpacity onPress={() => handleApprovedRestaurant(item._id)}>
+          <TouchableOpacity onPress={() => handleApprovedRestaurant(item._id, item.email, item.name)}>
           <MaterialIcons name="add" size={40} color="white" />
           </TouchableOpacity>
           <TouchableOpacity onPress={() => handleDeleteRestaurant(item._id)}>
