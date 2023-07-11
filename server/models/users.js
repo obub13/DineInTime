@@ -41,6 +41,10 @@ class User {
     static async DeleteUser(id){
         return await new DB().DeleteById(User.collection,id)
     }
+
+    static async EditUser(id,){
+        return await new DB().EditById(User.collection,id)
+    }
 }
 
 module.exports = User;

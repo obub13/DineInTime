@@ -177,19 +177,23 @@ export default function ContextProvider(props) {
     }
   };
 
-  const changeApprovedRestaurant = async(id)=>{
+  const changeApprovedRestaurant = async (id) => {
     try {
       console.log('changedapprovedrest starting func id', id);
       let res = await fetch(`${apiUrl}/api/restaurants/approved/${id}`, {
         method:"PUT",
-        // body:JSON.stringify({email,name}),
         headers: {
           "Content-Type": "application/json",
         },
       })
       console.log('after fetching from api');
+      if(res.ok){
       let data = await res.json();
       console.log(data, 'data log');
+      await LoadRestaurants(); // Wait for LoadRestaurants to complete
+      }else{
+        console.error('res not ok', res.statusText)
+      }
     } catch (error) {
       console.log('context error', error.message)
     }finally{
@@ -197,6 +201,29 @@ export default function ContextProvider(props) {
     }
   }
 
+  const editUser = async (id) => {
+    try {
+      console.log('changedapprovedrest starting func id', id);
+      let res = await fetch(`${apiUrl}/api/users/edit/${id}`, {
+        method:"PUT",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      })
+      console.log('after fetching from api');
+      if(res.ok){
+      let data = await res.json();
+      console.log(data, 'data log');
+      await LoadUsers(); // Wait for LoadRestaurants to complete
+      }else{
+        console.error('res not ok', res.statusText)
+      }
+    } catch (error) {
+      console.log('context error', error.message)
+    }finally{
+      LoadUsers();
+    }
+  }
 
 
   const findRestaurants = async (location, foodType, diners) => {
@@ -336,6 +363,7 @@ export default function ContextProvider(props) {
     addRestaurant,
     checkEmailBusiness,
     changeApprovedRestaurant,
+    editUser
   };
 
   return (

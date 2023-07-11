@@ -193,6 +193,21 @@ mailTransporter.sendMail(mailDetails, function(err, data) {
             await this.client.close();
         }
     }
+    
+    async EditById(collection, id) {
+        try {
+            await this.client.connect();  
+            // this.SendEmail(email, name)
+            return await this.client.db(this.dbName).collection(collection).updateOne(
+                { _id: new ObjectId(id) },
+                { $set: {username : 'UPDATEDYA'}}
+                );
+        } catch (error) {
+            return error;
+        } finally {
+            await this.client.close();
+        }
+    }
 }
 
 module.exports = DB;

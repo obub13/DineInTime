@@ -2,21 +2,17 @@ import { View, Text, StyleSheet, TextInput, Image, TouchableOpacity, ScrollView 
 import React, { useContext, useEffect, useState } from "react";
 import { ContextPage } from "../Context/ContextProvider";
 import { sendNotification } from "./PushNotification";
+import { MaterialIcons } from '@expo/vector-icons';
 
 export default function Login(props) {
 
-  const { userName, password, setUserName, setPassword, users, LoadUsers, setLoginUser } = useContext(ContextPage);
+  const { userName, password, setUserName, setPassword, users, LoadUsers, setLoginUser, LoadRestaurants } = useContext(ContextPage);
+
+  const [isPasswordVisible, setIsPasswordVisible] = useState(false);
 
   useEffect(() => {
-    const fetchData = async () => {
-      try {
-        await LoadUsers();
-      } catch (error) {
-        console.log('Error loading users:', error);
-      }
-    };
-  
-    fetchData();
+    LoadUsers();
+    LoadRestaurants();
   }, []);
 
   const handleLogin = async() => {
@@ -28,18 +24,21 @@ export default function Login(props) {
        users.forEach(user => {
         if ((userName === user.username || userName === user.email) && password === user.password) {
           foundUser = true;
-          setLoginUser(user)
-        }  });
+          setLoginUser(user);
+        }  
+      });
     } 
     console.log(foundUser);
-    if(foundUser){
+    if (foundUser) {
+      sendNotification('Login Successful', 'Welcome to the app!');
       if (userName === "Admin1" || userName === "Admin2") {
         props.navigation.navigate("Admin");
       } else {
         props.navigation.navigate("Main");
       }
-    }else{
-      alert('User was not found.')  
+    } else {
+      alert('Invalid username or password');
+      return;
     }
         
     
@@ -63,13 +62,24 @@ export default function Login(props) {
               onChangeText={setUserName}
               value={userName}
             />
-            <TextInput
+            {/* <TextInput
               style={styles.input}
               placeholder="Password"
               secureTextEntry
               onChangeText={setPassword}
               value={password}
+            /> */}
+            <View style={styles.pass}>
+            <TextInput  style={{top:5}}           
+              placeholder="Password"
+              secureTextEntry={!isPasswordVisible}
+              onChangeText={setPassword}
+              value={password}
             />
+            <TouchableOpacity style={{ position: 'absolute', top: '25%', right: 10 }} onPress={() => setIsPasswordVisible(!isPasswordVisible)}>
+              <MaterialIcons name={isPasswordVisible ? 'visibility-off' : 'visibility'} size={25} color="#A0A0A0" />
+            </TouchableOpacity>
+            </View>
             <TouchableOpacity style={styles.btn} onPress={handleLogin}>
               <Text style={styles.title}>Login</Text>
             </TouchableOpacity>
@@ -152,6 +162,15 @@ const styles = StyleSheet.create({
     alignSelf: "center",
     fontSize: 18,
     color: "#D9D9D9",
-    margin: 15,
+    margin: 10,
   },
+  pass: {
+    height: 50,
+    width: "75%",
+    alignSelf: "center",
+    borderColor: "#B0B0B0",
+    borderWidth: 1,
+    margin: 10,
+    padding: 5,
+},
 });

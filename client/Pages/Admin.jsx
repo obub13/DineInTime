@@ -5,7 +5,7 @@ import { MaterialIcons } from '@expo/vector-icons';
 
 export default function Admin(props) {
 
-    const { users, restaurants, LoadRestaurants, deleteUser, deleteRestaurant, changeApprovedRestaurant } = useContext(ContextPage);
+    const { users, LoadUsers, restaurants,setRestaurants, LoadRestaurants, deleteUser, deleteRestaurant, changeApprovedRestaurant, editUser } = useContext(ContextPage);
     const [usersListVisible, setUsersListVisible] = useState(false);
     const [restaurantListVisible, setRestaurantListVisible] = useState(false);
     const [selectedOption, setSelectedOption] = useState('all');
@@ -16,7 +16,16 @@ export default function Admin(props) {
     
   const handleEditUser = (id) => {
     // Handle edit action for the user with the specified id
-    console.log(`Edit user with ID: ${id}`);
+    console.log(`Edit user with ID: ${id}`)
+    Alert.alert(
+      'Edit User',
+      'Are you sure you want to edit this user?',
+      [
+        { text: 'Cancel', style: 'cancel' },
+        { text: 'Edit', style: 'destructive', onPress: () =>editUser(id) },
+      ],
+      { cancelable: true }
+    )
   };
 
   const handleDeleteUser = (id) => {
@@ -54,16 +63,18 @@ export default function Admin(props) {
   };
 
   const handleShowUsers = () => {
+    LoadUsers()
     setRestaurantListVisible(false);
     setUsersListVisible(true);
   }
 
   const handleShowRestaurants = () => {
+    LoadRestaurants()
     setUsersListVisible(false);
     setRestaurantListVisible(true);
   }
 
-  const handleApprovedRestaurant = (id, email, name) => {
+  const handleApprovedRestaurant = (id) => {
     console.log(`Add restaurant with ID: ${id}`);
     // show a confirmation alert before approving the restaurant
     Alert.alert(

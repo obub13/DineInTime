@@ -50,6 +50,17 @@ usersRoute.post('/add', async (req, res) => {
     }
 });
 
+usersRoute.put('/edit/:id', async(req,res)=>{
+    try {
+        let { id } = req.params;
+        // let {email, name} = req.body;
+        let data = await User.EditUser(id);
+        res.status(200).json(data);
+    } catch (error) {
+        res.status(500).json({ error: error.message })
+    }
+})
+
 
 usersRoute.delete('/delete/:id', async (req, res) => {
     try {
