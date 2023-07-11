@@ -82,7 +82,7 @@ export default function Admin(props) {
       'Are you sure you want to add this restaurant?',
       [
         { text: 'Cancel', style: 'cancel' },
-        { text: 'Add', style: 'destructive', onPress: () => changeApprovedRestaurant(id) },
+        { text: 'Add', style: 'destructive', onPress: () => changeApprovedRestaurant(id, email, name) },
       ],
       { cancelable: true }
     );

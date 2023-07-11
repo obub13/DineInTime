@@ -177,11 +177,12 @@ export default function ContextProvider(props) {
     }
   };
 
-  const changeApprovedRestaurant = async (id) => {
+  const changeApprovedRestaurant = async (id, email, name) => {
     try {
-      console.log('changedapprovedrest starting func id', id);
+      console.log('changedapprovedrest starting func id email name', id, email, name);
       let res = await fetch(`${apiUrl}/api/restaurants/approved/${id}`, {
         method:"PUT",
+        body: JSON.stringify({ email, name }),
         headers: {
           "Content-Type": "application/json",
         },

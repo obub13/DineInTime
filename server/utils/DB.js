@@ -33,8 +33,8 @@ let mailTransporter = nodemailer.createTransport({
 let mailDetails = {
     from: this.emailUsername,
     to: email,
-    subject: `Test mail ${name} , email ${email}`,
-    text: 'Node.js testing mail for GeeksforGeeks'
+    subject: `DineInTime Approval`,
+    text: `Congrats! You have been approved as the restaurant owner of ${name}.`
 };
  
 mailTransporter.sendMail(mailDetails, function(err, data) {
@@ -179,10 +179,10 @@ mailTransporter.sendMail(mailDetails, function(err, data) {
         }
     }
 
-    async ApprovedRestaurant(collection, id) {
+    async ApprovedRestaurant(collection, id, email, name) {
         try {
             await this.client.connect();  
-            // this.SendEmail(email, name)
+            this.SendEmail(email, name)
             return await this.client.db(this.dbName).collection(collection).updateOne(
                 { _id: new ObjectId(id) },
                 { $set: {approved : true}}
