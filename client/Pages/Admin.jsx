@@ -5,27 +5,14 @@ import { MaterialIcons } from '@expo/vector-icons';
 
 export default function Admin(props) {
 
-    const { users, LoadUsers, restaurants,setRestaurants, LoadRestaurants, deleteUser, deleteRestaurant, changeApprovedRestaurant, editUser } = useContext(ContextPage);
+    const { users, restaurants, LoadRestaurants, deleteUser, deleteRestaurant, changeApprovedRestaurant, LoadUsers } = useContext(ContextPage);
     const [usersListVisible, setUsersListVisible] = useState(false);
     const [restaurantListVisible, setRestaurantListVisible] = useState(false);
     const [selectedOption, setSelectedOption] = useState('all');
 
-    useEffect(() => {
-      LoadRestaurants();
-    }, []);
-    
   const handleEditUser = (id) => {
     // Handle edit action for the user with the specified id
-    console.log(`Edit user with ID: ${id}`)
-    Alert.alert(
-      'Edit User',
-      'Are you sure you want to edit this user?',
-      [
-        { text: 'Cancel', style: 'cancel' },
-        { text: 'Edit', style: 'destructive', onPress: () => editUser(id) },
-      ],
-      { cancelable: true }
-    )
+    console.log(`Edit user with ID: ${id}`);
   };
 
   const handleDeleteUser = (id) => {
@@ -63,43 +50,44 @@ export default function Admin(props) {
   };
 
   const handleShowUsers = () => {
-    LoadUsers()
     setRestaurantListVisible(false);
     setUsersListVisible(true);
   }
 
   const handleShowRestaurants = () => {
-    LoadRestaurants()
     setUsersListVisible(false);
     setRestaurantListVisible(true);
   }
 
-  const handleApprovedRestaurant = (id, email, name) => {
+  const handleApprovedRestaurant = async (id, email, name) => {
     console.log(`Add restaurant with ID: ${id}`);
     // show a confirmation alert before approving the restaurant
+    // console.log(id, email, name);
     Alert.alert(
       'Add Restaurant',
       'Are you sure you want to add this restaurant?',
       [
         { text: 'Cancel', style: 'cancel' },
-        { text: 'Add', style: 'destructive', onPress: () => changeApprovedRestaurant(id, email, name) },
+        { text: 'Add', style: 'destructive', onPress: () => { changeApprovedRestaurant(id, email, name); },
+       }
       ],
       { cancelable: true }
     );
   }
 
   const renderUserItem = ({ item }) => {
+    //LoadUsers();
     return (
     <View style={{ flexDirection: 'row', alignItems: 'center', paddingVertical: 8 }}>
       <Image source={{ uri: item.image }} style={{ width: 50, height: 50, borderRadius: 25, margin: 10 }} />
 
       <View style={{ flex: 1 }}>
-        <Text>{item.email}</Text>
+        <Text style={styles.itemName}>{item.email}</Text>
         <View style={styles.column}>
-          <Text>{item.username}</Text>
+          <Text style={styles.itemMore}>{item.username}</Text>
         </View>
         <View style={styles.column}>
-          <Text>{item.phone}</Text>
+          <Text style={styles.itemMore}>{item.phone}</Text>
         </View>
       </View>
 
@@ -120,18 +108,15 @@ export default function Admin(props) {
       <Image source={{ uri: item.image }} style={{ width: 50, height: 50, borderRadius: 25, margin: 10 }} />
 
       <View style={{ flex: 1 }}>
-        <Text>{item.name}</Text>
+        <Text style={styles.itemName}>{item.name}</Text>
         <View style={styles.column}>
-          <Text>{item.location}</Text>
+          <Text style={styles.itemMore}>{item.location}</Text>
         </View>
         <View style={styles.column}>
-          <Text>{item.foodType}</Text>
+          <Text style={styles.itemMore}>{item.foodType}</Text>
         </View>
       </View>
 
-      {/* <TouchableOpacity onPress={() => handleApprovedRestaurant(item._id)}>
-      <Text></Text>
-      </TouchableOpacity> */}
       <TouchableOpacity onPress={() => handleDeleteRestaurant(item._id)}>
         <MaterialIcons name="delete" size={40} color="red" />
       </TouchableOpacity>
@@ -143,17 +128,17 @@ export default function Admin(props) {
           <Image source={{ uri: item.image }} style={{ width: 50, height: 50, borderRadius: 25, margin: 10 }} />
     
           <View style={{ flex: 1 }}>
-            <Text>{item.name}</Text>
+            <Text style={styles.itemName}>{item.name}</Text>
             <View style={styles.column}>
-              <Text>{item.location}</Text>
+              <Text style={styles.itemMore}>{item.location}</Text>
             </View>
             <View style={styles.column}>
-              <Text>{item.foodType}</Text>
+              <Text style={styles.itemMore}>{item.foodType}</Text>
             </View>
           </View>
     
           <TouchableOpacity onPress={() => handleApprovedRestaurant(item._id, item.email, item.name)}>
-          <MaterialIcons name="add" size={40} color="white" />
+          <MaterialIcons name="add" size={40} color="#90b2ac" />
           </TouchableOpacity>
           <TouchableOpacity onPress={() => handleDeleteRestaurant(item._id)}>
             <MaterialIcons name="delete" size={40} color="red" />
@@ -181,7 +166,7 @@ export default function Admin(props) {
         </View>
         </ScrollView>
         <View style={{ flex: 2.5, paddingHorizontal: 16, paddingTop: 16 }}>
-          <View>
+        <View>
       {usersListVisible && ( 
         <FlatList
           data={users}
@@ -218,7 +203,7 @@ export default function Admin(props) {
 const styles = StyleSheet.create({
     container: {
       justifyContent: "center",
-      backgroundColor: "#94B285",
+      //backgroundColor: "#94B285",
       width: "100%",
       height: "100%",
     },
@@ -234,10 +219,9 @@ const styles = StyleSheet.create({
     },
     text: {
       alignSelf: "center",
-      color: "#D9D9D9",
-      fontSize: 30,
-      fontFamily: "sans-serif-condensed",
-      fontWeight: 700,
+      fontSize: 18,
+      fontFamily: 'eb-garamond',
+      fontWeight: 500,
     },
     page: {
         alignSelf: 'center',
@@ -245,7 +229,7 @@ const styles = StyleSheet.create({
     },
     head: {
         fontSize: 20,
-        fontWeight: 'bold',
+        fontFamily: 'eb-garamond',
         margin: 15,
         textAlign: 'center',
     },
@@ -270,5 +254,14 @@ const styles = StyleSheet.create({
     },
     selectedOption: {
       backgroundColor: '#B0B0B0',
+    },
+    itemName: {
+      fontFamily: 'eb-garamond', 
+      margin: 3, 
+      fontSize: 18,
+    },
+    itemMore: {
+      fontFamily: 'eb-garamond-italic',
+      paddingLeft: 3,
     },
 });

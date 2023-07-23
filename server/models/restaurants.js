@@ -14,6 +14,7 @@ class Restaurant {
     password;
     verify;
     approved=false;
+    orders=[];
 
     constructor(email, phone, name, location, address, foodType, image, availableSeats, locationSeats, password, verify) {
         this.email = email;
@@ -63,6 +64,18 @@ class Restaurant {
 
     static async ChangeApproved(id, email, name){
         return await new DB().ApprovedRestaurant(Restaurant.collection, id, email, name);
+    }
+
+    static async AddItem(id, name, price, image) {
+        return await new DB().AddMenuItem(Restaurant.collection, id, name, price, image);
+    }
+
+    static async DeleteItem(id, itemId) {
+        return await new DB().DeleteMenuItem(Restaurant.collection, id, itemId);
+    }
+    
+    static async EditMenu(id, itemId, name, price, image) {
+        return await new DB().EditMenuItem(Restaurant.collection, id, itemId, name, price, image);
     }
 }
 

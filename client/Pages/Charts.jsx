@@ -25,10 +25,9 @@ export default function Charts(props) {
     const [selectedCity, setSelectedCity] = useState('All'); 
     const [modalVisible, setModalVisible] = useState(false);
 
-  useEffect(() => {
-    LoadRestaurants();
-    LoadFoodTypes();
-  }, []);
+    useEffect(() => {
+      LoadRestaurants();
+    }, []);
 
   // Generate background colors for food types
   const backgroundColors = generateBackgroundColors(foodTypes.length);
@@ -37,9 +36,9 @@ export default function Charts(props) {
 
   const getFilteredRestaurantData = () => {
     if (selectedCity === 'All') {
-      return restaurants;
+      return restaurants.filter(restaurant => restaurant.approved === true);
     }
-    return restaurants.filter(restaurant => restaurant.location === selectedCity);
+    return restaurants.filter(restaurant => restaurant.location === selectedCity && restaurant.approved === true);
   };
 
   const filteredRestaurantData = getFilteredRestaurantData();
@@ -69,7 +68,7 @@ export default function Charts(props) {
                   setModalVisible(false);
                 }}
               >
-                <Text style={{ fontSize: 18, marginBottom: 10 }}>{city}</Text>
+                <Text style={{ fontSize: 18, marginBottom: 10, fontFamily: 'eb-garamond' }}>{city}</Text>
               </TouchableOpacity>
             ))}
           </View>
@@ -242,13 +241,13 @@ export default function Charts(props) {
       ) : (
         <View style={{ flex: 1 }}>
           <View style={{ flexDirection: 'row', justifyContent: 'center', alignItems: 'center' }}>
-            <Text style={{fontSize: 20, fontWeight: 'bold', margin: 15}}>Filter by City:</Text>
+            <Text style={{fontSize: 20, fontWeight: 'bold', margin: 15, fontFamily: 'eb-garamond'}}>Filter by City:</Text>
             <TouchableOpacity onPress={() => setModalVisible(true)}>
-              <Text style={{ fontSize: 16 }}>{selectedCity}</Text>
+              <Text style={{ fontSize: 16, fontFamily: 'eb-garamond-italic' }}>{selectedCity}</Text>
             </TouchableOpacity>
           </View>
           {renderCityDropdown()}
-          <View style={{ height: 175 }}>
+          <View style={{ height: 200 }}>
             <WebView
               originWhitelist={['*']}
               source={{ html: chartHTML }}
@@ -256,9 +255,9 @@ export default function Charts(props) {
             />
           </View>
           <View>
-            <Text style={{alignSelf: 'center', margin: 15, fontSize: 20, fontWeight: 'bold'}}>Food Types Percentage</Text>
+            <Text style={{alignSelf: 'center', margin: 15, fontSize: 20, fontWeight: 'bold', fontFamily: 'eb-garamond'}}>Food Types Percentage</Text>
           </View>
-          <View style={{ height: 350 }}>
+          <View style={{ height: 400 }}>
             <WebView
               originWhitelist={['*']}
               source={{ html: chartHTMLFood }}
@@ -270,5 +269,3 @@ export default function Charts(props) {
     </View>
   );
 };
-
-//View that holds the webview has a hard-coded height to display it under the rest of the elements in the Main component.
