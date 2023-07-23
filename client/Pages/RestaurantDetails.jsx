@@ -24,7 +24,7 @@ export default function RestaurantDetails({ route, navigation }) {
   const [editedItemName, setEditedItemName] = useState('');
   const [editedItemPrice, setEditedItemPrice] = useState('');
   const [editedItemImage, setEditedItemImage] = useState('');
-
+  
     useFocusEffect(
       React.useCallback(() => {
         const handleBackPress = () => {
@@ -63,7 +63,7 @@ export default function RestaurantDetails({ route, navigation }) {
 const handleAddItem = () => {
     setIsAddingItem(true);
   };
-
+  
   // Function to handle adding the new menu item
   const handleSaveItem = () => {
     // Create a new item object with the captured details
@@ -110,7 +110,8 @@ const handleAddItem = () => {
       image: editedItemImage,
     };
 
-    if (editedItemName && editedItemPrice && editedItemImage) {
+    console.log(updateItem);
+    if (editedItemId && editedItemName && editedItemPrice && editedItemImage) {
       editItem(restaurant._id, updateItem.itemId, updateItem.name, updateItem.price, updateItem.image);
       // Update the state by replacing the old item with the edited item
       const updatedMenuItems = menuItems.map(item => {
@@ -135,8 +136,12 @@ const handleAddItem = () => {
 
   // Function to handle canceling the edit modal
   const handleCancelEdit = () => {
-    // Close the edit modal
-    setEditModalVisible(false);
+    if(isAddingItem){
+      setIsAddingItem(false);
+    }else{
+      // Close the edit modal
+      setEditModalVisible(false);
+    }
   };
 
   const handleDeleteItem = (id, itemId) => {
@@ -239,6 +244,7 @@ const handleAddItem = () => {
         </View>
     </View>
     <View>
+      <View>
         <Text style={styles.menu}>Menu</Text>
         <FlatList
           data={menuItems}
@@ -252,33 +258,8 @@ const handleAddItem = () => {
         />
         <Button mode='outlined' style={styles.btn} onPress={handleAddItem}>Add Item</Button>
     </View>
-    {/* <Modal visible={isAddingItem} transparent={true} animationType="slide">
-        <View style={{backgroundColor: '#aaccc6', width: '50%', alignSelf: 'center', padding: 10, margin: 5}}>
-          <TextInput
-            mode="outlined" 
-            label="Item Name"
-            value={newItemName}
-            onChangeText={setNewItemName}
-          />
-          <TextInput
-            mode="outlined" 
-            label="Item Price"
-            value={newItemPrice}
-            onChangeText={setNewItemPrice}
-            keyboardType="numeric"
-          />
-           <View style={{flexDirection:'row', justifyContent:'center'}}>
-              <TouchableOpacity onPress={pickImage}><MaterialIcons style={styles.imgBtn} name="add-photo-alternate" /></TouchableOpacity>
-            </View>
-            {newItemImage && <Image source={{ uri: newItemImage }} style={{ width: 100, height: 100, alignSelf:'center' }} />}
-          <View style={{flexDirection:'row', justifyContent:'center'}}>
-            <Button mode='outlined' style={{backgroundColor: '#f0f0f0', margin: 5}}  onPress={handleSaveItem}>Save</Button>
-            <Button mode='outlined' style={{backgroundColor: '#f0f0f0',  margin: 5}} onPress={() => setIsAddingItem(false)}>Cancel</Button>
-          </View>
-        </View>
-      </Modal> */}
-      <Modal visible={isAddingItem || editModalVisible} transparent={true} animationType="slide">
-      <View style={{ backgroundColor: '#aaccc6', width: '50%', alignSelf: 'center', padding: 10, margin: 5 }}>
+      <Modal visible={isAddingItem || editModalVisible} transparent={true} animationType="slide" onDismiss={handleCancelEdit}>
+      <View style={{ backgroundColor: '#aaccc6', width: '50%', alignSelf: 'center', padding: 10, margin: 5, }}>
         <TextInput
           mode="outlined"
           label="Item Name"
@@ -320,6 +301,7 @@ const handleAddItem = () => {
         </View>
       </View>
     </Modal>
+    </View>
     </ScrollView>
     </View>
   )}
