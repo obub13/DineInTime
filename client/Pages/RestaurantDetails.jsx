@@ -1,8 +1,8 @@
-import { View, Text, StyleSheet, ScrollView, Image, FlatList, TouchableOpacity, Alert, BackHandler } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, Image, FlatList, TouchableOpacity, Alert, BackHandler, KeyboardAvoidingView, Platform } from 'react-native';
 import React, { useContext, useEffect, useState } from 'react';
 import { MaterialIcons } from '@expo/vector-icons';
 import { ContextPage } from '../Context/ContextProvider';
-import { Button, Modal, TextInput } from 'react-native-paper';
+import { Button, Modal, TextInput, RadioButton  } from 'react-native-paper';
 import * as ImagePicker from 'expo-image-picker';
 import { useFocusEffect } from '@react-navigation/native';
 
@@ -11,12 +11,15 @@ export default function RestaurantDetails({ route, navigation }) {
   const { userType, restaurant } = route.params;
   const { addItem, deleteItem, editItem } = useContext(ContextPage);
 
-    // State variables for the new menu item details
+  
+  // State variables for the new menu item details
   const [newItemName, setNewItemName] = useState('');
   const [newItemPrice, setNewItemPrice] = useState('');
   const [newItemImage, setNewItemImage] = useState('');
+  const [selectedCategory, setSelectedCategory] = useState('');
+
   const [isAddingItem, setIsAddingItem] = useState(false);
-  const [menuItems, setMenuItems] = useState(restaurant.menu);
+  const [menuItems, setMenuItems] = useState([]);
 
     // State variables for editing an existing item
   const [editModalVisible, setEditModalVisible] = useState(false);
@@ -24,7 +27,30 @@ export default function RestaurantDetails({ route, navigation }) {
   const [editedItemName, setEditedItemName] = useState('');
   const [editedItemPrice, setEditedItemPrice] = useState('');
   const [editedItemImage, setEditedItemImage] = useState('');
+  const [editedItemCategory, setEditedItemCategory] = useState('');
+
+  const [filterCategory, setFilterCategory] = useState('All'); 
+  const categoryList = ['All', ...(menuItems ? new Set(menuItems.map(item => item.category)) : [])];
+
   
+  // Update the menuItems state when the restaurant prop changes
+  useEffect(() => {
+    if (restaurant) {
+      setMenuItems(restaurant.menu);
+    }
+  }, [restaurant]);
+
+  const getFilteredCategories = () => {
+    if (menuItems) {
+      if (filterCategory === 'All') {
+        return menuItems.filter(item => item.category !== undefined);
+      } 
+      return menuItems.filter(item => item.category === filterCategory); 
+    } else {
+      return null;
+    }
+  };
+
     useFocusEffect(
       React.useCallback(() => {
         const handleBackPress = () => {
@@ -48,6 +74,11 @@ export default function RestaurantDetails({ route, navigation }) {
       }, [navigation, userType]) 
     );
 
+
+  // const generateTempId = () => {
+  //   return 'temp' + Math.random().toString(36).substring(7); // Generate a unique temporary ID
+  // };
+
   const pickImage = async () => {
     let result = await ImagePicker.launchImageLibraryAsync({
       mediaTypes: ImagePicker.MediaTypeOptions.All,
@@ -56,26 +87,38 @@ export default function RestaurantDetails({ route, navigation }) {
       quality: 1,
   });
     if (!result.canceled) {
+      if (!isAddingItem) {
+        setEditedItemImage(result.assets[0].uri);
+      } else {
         setNewItemImage(result.assets[0].uri);
-  }
+      }
+    }
 };
 
 const handleAddItem = () => {
     setIsAddingItem(true);
   };
-  
+
   // Function to handle adding the new menu item
-  const handleSaveItem = () => {
+  const handleSaveItem = async () => {
     // Create a new item object with the captured details
     const newItem = {
       name: newItemName,
       price: parseFloat(newItemPrice),
       image: newItemImage,
+      category: selectedCategory,
     };
 
-    if (newItemName && newItemPrice && newItemImage) {
-      addItem(restaurant._id, newItem.name, newItem.price, newItem.image);
-      setMenuItems([...menuItems, newItem]); // Update the state with the new item
+    console.log(newItem);
+    if (newItemName && newItemPrice && newItemImage && selectedCategory) {
+      const itemAdded = await addItem(restaurant._id, newItem.name, newItem.price, newItem.image, newItem.category);
+      if (menuItems === undefined) {
+        // If menuItems is empty, create a new array with the newItem
+        setMenuItems([itemAdded]);
+      } else {
+        // If menuItems already has items, spread the existing items and add the newItem
+        setMenuItems([...menuItems, itemAdded]);
+      }  
     } else {
       alert('Invalid Error');
     }
@@ -85,6 +128,7 @@ const handleAddItem = () => {
     setNewItemName('');
     setNewItemPrice('');
     setNewItemImage('');
+    setSelectedCategory('');
   };
   
   const handleEditItem = (id) => {
@@ -96,6 +140,7 @@ const handleAddItem = () => {
       setEditedItemName(selectedItem.name);
       setEditedItemPrice(selectedItem.price.toString());
       setEditedItemImage(selectedItem.image);
+      setEditedItemCategory(selectedItem.category);
       setEditModalVisible(true);
     }
   };
@@ -108,20 +153,29 @@ const handleAddItem = () => {
       name: editedItemName,
       price: parseFloat(editedItemPrice),
       image: editedItemImage,
+      category: editedItemCategory,
     };
 
     console.log(updateItem);
-    if (editedItemId && editedItemName && editedItemPrice && editedItemImage) {
-      editItem(restaurant._id, updateItem.itemId, updateItem.name, updateItem.price, updateItem.image);
+
+    if (editedItemId && editedItemName && editedItemPrice && editedItemImage && editedItemCategory) {
+      editItem(restaurant._id, updateItem.itemId, updateItem.name, updateItem.price, updateItem.image, updateItem.category);
       // Update the state by replacing the old item with the edited item
-      const updatedMenuItems = menuItems.map(item => {
-        if (item._id === updateItem.itemId) {
-          return updateItem;
-        } else {
-          return item;
-        }
+      setMenuItems((prevItems) => {
+        return prevItems.map((item) => {
+          if (item._id === updateItem.itemId) {
+            return {
+              ...item, // Keep the original properties
+              name: updateItem.name,
+              price: updateItem.price,
+              image: updateItem.image,
+              category: updateItem.category,
+            };
+          } else {
+            return item;
+          }
+        });
       });
-      setMenuItems(updatedMenuItems);
     } else {
       alert('Invalid Error');
     }
@@ -132,13 +186,14 @@ const handleAddItem = () => {
     setEditedItemName('');
     setEditedItemPrice('');
     setEditedItemImage('');
+    setEditedItemCategory('');
   };
 
   // Function to handle canceling the edit modal
   const handleCancelEdit = () => {
-    if(isAddingItem){
+    if (isAddingItem) {
       setIsAddingItem(false);
-    }else{
+    } else {
       // Close the edit modal
       setEditModalVisible(false);
     }
@@ -162,9 +217,19 @@ const handleAddItem = () => {
     );
   };
 
+    // Custom sorting function for the categoryList
+    const customCategorySorting = (categoryA, categoryB) => {
+      // Define the order in which categories should appear
+      const order = ['All', 'Appetizers', 'Add-ons', 'Main Dishes', 'Desserts', 'Beverages'];
+      const indexA = order.indexOf(categoryA);
+      const indexB = order.indexOf(categoryB);
+  
+      return indexA - indexB;
+    };
+
   const renderMenuItem = ({ item }) => {
     return (
-    <View style={{ flexDirection: 'row', alignItems: 'center', paddingVertical: 8 }}>
+    <View key={item._id} style={{ flexDirection: 'row', alignItems: 'center', paddingVertical: 8 }}>
       <Image source={{ uri: item?.image }} style={{ width: 70, height: 70, borderRadius: 15, margin: 15 }} />
 
       <View style={{ flex: 1, flexDirection: 'row', alignSelf: 'center', marginHorizontal: 10 }}>
@@ -184,45 +249,17 @@ const handleAddItem = () => {
     </View>
   )};
 
+
+  const renderCategoryLink = ({ item, index }) => {
+    return (
+      <TouchableOpacity key={index} onPress={() => setFilterCategory(item)}>
+        <Text style={[styles.categoryLink, filterCategory === item && styles.activeLink]}>{item}</Text>
+      </TouchableOpacity>
+    );
+  };
+
+
   return (
-    <View>
-        {userType === 'regularUser' ? (
-    <View style={styles.container}>
-        <ScrollView keyboardShouldPersistTaps="handled" overScrollMode='never' style={{ flex: 1 }}>
-            <Image source={require("../assets/icon.png")} style={styles.icon}/>
-            <Text style={styles.text}>DineInTime</Text>
-            <Image source={{ uri: restaurant.image }} style={styles.image} />
-        <View style={styles.upCon}>
-            <Text style={styles.header}>{restaurant.name}</Text>
-            <View style={{flexDirection: 'row', margin: 5}}> 
-                <MaterialIcons name={'location-on'} style={styles.material} />
-                <Text style={styles.font}>{restaurant.address}, {restaurant.location}</Text>
-            </View>
-            <View style={{flexDirection: 'row', margin: 5}}> 
-                <MaterialIcons name={'call'} style={styles.material} />
-                <Text style={styles.font}>{restaurant.phone}</Text>
-            </View>
-            <View style={{flexDirection: 'row', margin: 5}}> 
-                <MaterialIcons name={'mail'} style={styles.material} />
-                <Text style={styles.font}>{restaurant.email}</Text>
-            </View>
-        </View>
-        <View>
-            <Text style={styles.menu}>Menu</Text>
-            <FlatList
-                data={menuItems}
-                horizontal
-                showsHorizontalScrollIndicator={false}
-                contentContainerStyle={{ flexDirection: "column" }}
-                showsVerticalScrollIndicator={false}
-                keyExtractor={(item, index) => item._id ? item._id.toString() : index.toString()}
-                renderItem={renderMenuItem}
-                ListEmptyComponent={() => <Text>No items found</Text>}
-            />
-        </View>
-        </ScrollView>
-  </View>
-  ) : (
     <View style={styles.container}>
     <ScrollView keyboardShouldPersistTaps="handled" overScrollMode='never' style={{ flex: 1 }}>
         <Image source={require("../assets/icon.png")} style={styles.icon}/>
@@ -244,22 +281,51 @@ const handleAddItem = () => {
         </View>
     </View>
     <View>
-      <View>
-        <Text style={styles.menu}>Menu</Text>
+      <Text style={styles.menu}>Menu</Text>
+      {categoryList.length > 1 && (
         <FlatList
-          data={menuItems}
-          horizontal
-          showsHorizontalScrollIndicator={false}
-          contentContainerStyle={{ flexDirection: "column" }}
-          showsVerticalScrollIndicator={false}
-          keyExtractor={(item, index) => item._id ? item._id.toString() : index.toString()}
-          renderItem={renderMenuItem}
-          ListEmptyComponent={() => <Text>No items found</Text>}
+            horizontal
+            data={categoryList.sort(customCategorySorting)}
+            renderItem={renderCategoryLink}
+            keyExtractor={(item, index) => index.toString()}
+            showsHorizontalScrollIndicator={false}
+            contentContainerStyle={styles.options}
         />
-        <Button mode='outlined' style={styles.btn} onPress={handleAddItem}>Add Item</Button>
+      )}  
+      {userType === 'restaurantOwner' && (
+         <Button mode='outlined' style={styles.btn} onPress={handleAddItem}>Add Item</Button>
+        )}
+
+      <ScrollView>
+        {categoryList && categoryList.map((category) => {
+          if (menuItems) {
+    
+          const filteredItems = getFilteredCategories().filter((item) => item.category === category); 
+
+          // Render sections only if there are menu items in the category
+          if (filteredItems.length > 0) {
+            return (
+              <View style={styles.section} key={category}>
+                <Text style={styles.sectionTitle}>{category}</Text>
+                {filteredItems.map((item) => (
+                  <View key={item._id}>
+                    {renderMenuItem({ item })}
+                  </View>
+                ))}
+              </View>
+            );
+          } else {
+            return null;
+          }
+        }
+      })}
+      </ScrollView>
     </View>
-      <Modal visible={isAddingItem || editModalVisible} transparent={true} animationType="slide" onDismiss={handleCancelEdit}>
-      <View style={{ backgroundColor: '#aaccc6', width: '50%', alignSelf: 'center', padding: 10, margin: 5, }}>
+      <Modal visible={isAddingItem || editModalVisible} 
+        transparent={true} 
+        animationType="slide"
+        onDismiss={handleCancelEdit}>
+      <View style={{ backgroundColor: '#aaccc6', alignSelf: 'center', padding: 10, margin: 5 }}>
         <TextInput
           mode="outlined"
           label="Item Name"
@@ -284,28 +350,45 @@ const handleAddItem = () => {
           editedItemImage && <Image source={{ uri: editedItemImage }} style={{ width: 100, height: 100, alignSelf: 'center' }} />
         )}
         <View style={{ flexDirection: 'row', justifyContent: 'center' }}>
-          <Button
-            mode="outlined"
-            style={{ backgroundColor: '#f0f0f0', margin: 5 }}
-            onPress={isAddingItem ? handleSaveItem : handleSaveEdit}
-          >
-            Save
-          </Button>
-          <Button
-            mode="outlined"
-            style={{ backgroundColor: '#f0f0f0', margin: 5 }}
-            onPress={isAddingItem ? () => setIsAddingItem(false) : handleCancelEdit}
-          >
-            Cancel
-          </Button>
+        <RadioButton.Group onValueChange={(value) => {
+                if (isAddingItem) {
+                  setSelectedCategory(value);
+                } else {
+                  setEditedItemCategory(value); // Use for editing
+                }
+              }}
+              value={isAddingItem ? selectedCategory : editedItemCategory}
+            >
+          <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+            <RadioButton value="Appetizers" color="#90b2ac" />
+            <Text style={styles.radioLabel}>Appetizers</Text>
+          </View>
+          <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+            <RadioButton value="Add-ons" color="#90b2ac" />
+            <Text style={styles.radioLabel}>Add-ons</Text>
+          </View>
+          <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+            <RadioButton value="Main Dishes" color="#90b2ac" />
+            <Text style={styles.radioLabel}>Main Dishes</Text>
+          </View>
+          <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+            <RadioButton value="Desserts" color="#90b2ac" />
+            <Text style={styles.radioLabel}>Desserts</Text>
+          </View>
+          <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+            <RadioButton value="Beverages" color="#90b2ac" />
+            <Text style={styles.radioLabel}>Beverages</Text>
+          </View>
+        </RadioButton.Group>
+        </View>
+        <View style={{ flexDirection: 'row', justifyContent: 'center' }}>
+          <Button mode="outlined" style={{ backgroundColor: '#f0f0f0', margin: 5 }} onPress={isAddingItem ? handleSaveItem : handleSaveEdit}>Save</Button>
+          <Button mode="outlined" style={{ backgroundColor: '#f0f0f0', margin: 5 }} onPress={isAddingItem ? () => setIsAddingItem(false) : handleCancelEdit}>Cancel</Button>
         </View>
       </View>
     </Modal>
-    </View>
     </ScrollView>
     </View>
-  )}
-  </View>
   );
 };
 
@@ -382,5 +465,40 @@ const styles = StyleSheet.create({
         borderWidth: 1,
         margin: 10,
         padding: 5,
+    },
+    radioLabel: {
+      fontSize: 14,
+      fontFamily: 'eb-garamond',
+      marginVertical: 8,
+    },
+    options: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      paddingVertical: 10,
+      borderBottomWidth: 1,
+      borderBottomColor: '#ccc',
+    },
+    categoryLink: {
+      fontSize: 16,
+      fontWeight: 'bold',
+      fontFamily: 'eb-garamond',
+      color: '#333',
+      paddingHorizontal: 10,
+    },
+    activeLink: {
+      color: '#90b2ac', // Change the color for the active link
+    },
+    section: {
+      backgroundColor: '#fff',
+      marginVertical: 10,
+      padding: 10,
+      borderTopWidth: 1,
+      borderTopColor: '#ccc',
+    },
+    sectionTitle: {
+      fontSize: 20,
+      fontWeight: 'bold',
+      fontFamily: 'eb-garamond',
+      marginBottom: 10,
     },
 });

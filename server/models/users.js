@@ -35,15 +35,16 @@ class User {
         return await new DB().FindUsername(User.collection, username);
     }
 
-     async InsertOne(){
-        return await new DB().Insert(User.collection, this);
-    }
-    static async DeleteUser(id){
-        return await new DB().DeleteById(User.collection,id)
+    static async LoginUser(username, password) {
+        return await new DB().Login(User.collection, username, password);
     }
 
-    static async EditUser(id,){
-        return await new DB().EditById(User.collection,id)
+    async InsertOne(){
+        return await new DB().Insert(User.collection, this);
+    }
+
+    static async DeleteUser(id){
+        return await new DB().DeleteById(User.collection, id);
     }
 }
 

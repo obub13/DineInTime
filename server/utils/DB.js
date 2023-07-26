@@ -1,6 +1,5 @@
 const { MongoClient, ObjectId } = require('mongodb');
 require('dotenv').config();
-
 const nodemailer = require('nodemailer');
 
 class DB {
@@ -10,7 +9,6 @@ class DB {
     emailService;
     emailUsername;
     emailPassword;
-    
 
     constructor() {
         this.client = new MongoClient(process.env.DB_URI);
@@ -19,33 +17,7 @@ class DB {
         this.emailUsername = process.env.EMAIL_USERNAME;
         this.emailPassword = process.env.EMAIL_PASSWORD;
     }
-
- 
-   SendEmail(email, name){
-let mailTransporter = nodemailer.createTransport({
-    service: 'gmail',
-    auth: {
-        user: this.emailUsername,
-        pass: this.emailPassword
-    }
-});
- 
-let mailDetails = {
-    from: this.emailUsername,
-    to: email,
-    subject: `DineInTime Approval`,
-    text: `Congrats! You have been approved as the restaurant owner of ${name}.`
-};
- 
-mailTransporter.sendMail(mailDetails, function(err, data) {
-    if(err) {
-        console.log('Error Occurs', err.message);
-    } else {
-        console.log('Email sent successfully', data.json());
-    }
-});
- }
-
+    
     async FindAll(collection, query = {}, projection = {}) {
         try {
             await this.client.connect();
@@ -76,7 +48,7 @@ mailTransporter.sendMail(mailDetails, function(err, data) {
             return await this.client.db(this.dbName).collection(collection).findOne({ email: email });
         } catch (error) {
             return error;
-        }
+        } 
         finally {
             await this.client.close();
         }
@@ -88,7 +60,29 @@ mailTransporter.sendMail(mailDetails, function(err, data) {
             return await this.client.db(this.dbName).collection(collection).findOne({ username: username });
         } catch (error) {
             return error;
+        } 
+        finally {
+            await this.client.close();
         }
+    }
+
+    async Login(collection, username, password) {
+        try {
+            await this.client.connect();
+            return await this.client.db(this.dbName).collection(collection).findOne(
+                {$and: [
+                    {
+                      $or: [
+                        { email: username },
+                        { username: username }
+                      ]
+                    },
+                    { password: password }
+                  ]
+                });
+        } catch (error) {
+            return error;
+        } 
         finally {
             await this.client.close();
         }
@@ -112,15 +106,15 @@ mailTransporter.sendMail(mailDetails, function(err, data) {
 
             const agg = [
                 {
-                    '$match': {
-                        location: location,
-                        foodType: foodType,
-                        availableSeats: {
-                            '$gte': parseInt(diners)
-                        }
+                  '$match': {
+                    location: location, 
+                    foodType: foodType, 
+                    availableSeats: {
+                      '$gte': parseInt(diners)
                     }
+                  }
                 }
-            ];
+              ];
             return await this.client.db(this.dbName).collection(collection).aggregate(agg).toArray();
         } catch (error) {
             return error;
@@ -132,16 +126,15 @@ mailTransporter.sendMail(mailDetails, function(err, data) {
 
     async UpdateSeatsByReservation(collection, id, seatType, numDiners) {
         try {
-            await this.client.connect();
-            // console.log("server" + id, seatType, numDiners);     
+            await this.client.connect();   
             return await this.client.db(this.dbName).collection(collection).updateOne(
                 { _id: new ObjectId(id) },
-                {
-                    $inc: {
-                        [`locationSeats.${seatType}`]: - parseInt(numDiners),
-                        availableSeats: - parseInt(numDiners)
-                    }
-                });
+            {
+            $inc: {
+                [`locationSeats.${seatType}`]: - parseInt(numDiners),
+                availableSeats: - parseInt(numDiners)
+              }
+            });     
         } catch (error) {
             return error;
         } finally {
@@ -151,79 +144,102 @@ mailTransporter.sendMail(mailDetails, function(err, data) {
 
     async DeleteById(collection, id) {
         try {
-            await this.client.connect()
-            return await this.client.db(this.dbName).collection(collection).deleteOne({ _id: new ObjectId(id) })
+            await this.client.connect();
+            return await this.client.db(this.dbName).collection(collection).deleteOne({ _id: new ObjectId(id) });
         } catch (error) {
-            return error
-        } finally {
+            return error;
+        }  finally {
             await this.client.close();
         }
     }
-    
-    async UpdateOrder(collection, id, userId, seatType, diners){
+
+    async UpdateOrder(collection, id, userId, seatType, diners) {
         try {
-            await this.client.connect()
+            await this.client.connect();
             let order = {
                 _id : new ObjectId(),
                 userId: new ObjectId(userId),
                 diners: diners,
                 seatType: seatType,
-                createdAt: new Date().toLocaleString('en-US',{timeZone:'Asia/Jerusalem'})
-            }
+                createdAt: new Date().toLocaleString('en-US', { timeZone: 'Asia/Jerusalem' })
+            };
             return await this.client.db(this.dbName).collection(collection).updateOne(
                 { _id: new ObjectId(id) },
-                { $push: { orders:order } }
-            )
+                { $push: { orders: order } }
+            );
         } catch (error) {
-            return error
-        }finally{
-            await this.client.close()
+            return error;
+        }  finally {
+            await this.client.close();
         }
     }
 
-    async ApprovedRestaurant(collection, id, email, name) {
+    async ApprovedRestaurant(collection, id) {
         try {
-            await this.client.connect();  
-            this.SendEmail(email, name)
+            await this.client.connect();
             return await this.client.db(this.dbName).collection(collection).updateOne(
-                { _id: new ObjectId(id) },
+                { _id: new ObjectId(id) }, 
                 { $set: {approved : true}}
-                );
+            );
         } catch (error) {
             return error;
-        } finally {
-            await this.client.close();
-        }
-    }
-    
-    async EditById(collection, id) {
-        try {
-            await this.client.connect();  
-            // this.SendEmail(email, name)
-            return await this.client.db(this.dbName).collection(collection).updateOne(
-                { _id: new ObjectId(id) },
-                { $set: {username : 'UPDATEDYA'}}
-                );
-        } catch (error) {
-            return error;
-        } finally {
+        }  finally {
             await this.client.close();
         }
     }
 
-    async AddMenuItem(collection, id, name, price, image) {
+    async SendEmailApproval(email, subject, message) {
+        try {
+            const transporter = nodemailer.createTransport({
+                host: 'smtp.gmail.com',
+                port: 587,
+                secure: false, 
+                service: this.emailService,
+                auth: {
+                    user:  this.emailUsername,
+                    pass: this.emailPassword,
+                },
+            });
+        
+          const mailOptions = {
+            from: this.emailUsername,
+            to: email,
+            subject: subject,
+            text: message,
+            html: `<p>${message}</p>`,
+          };
+        
+          const info = await transporter.sendMail(mailOptions);
+          console.log('Approval email sent successfully', info);
+          return info;
+
+        } catch (error) {
+            return error;
+        } 
+    }
+
+    async AddMenuItem(collection, id, name, price, image, category) {
         try {
             await this.client.connect();
             let item = {
                 _id: new ObjectId(),
                 name: name,
                 price: price,
-                image: image
+                image: image,
+                category: category
             };
-            return await this.client.db(this.dbName).collection(collection).updateOne(
+            await this.client.db(this.dbName).collection(collection).updateOne(
                 { _id: new ObjectId(id) },
                 { $push: { menu: item } }
             );
+
+            // Retrieve the newly added item from the database
+            const newItem = await this.client.db(this.dbName).collection(collection).findOne(
+                { _id: new ObjectId(id), 'menu._id': item._id },
+                { projection: { 'menu.$': 1 } } // Only retrieve the newly added menu item
+            );
+            return newItem.menu[0]; // Return the newly added menu item
+
         } catch (error) {
             return error;
         }  finally {
@@ -238,29 +254,27 @@ mailTransporter.sendMail(mailDetails, function(err, data) {
                 { _id: new ObjectId(id) },
                 { $pull: { menu: { _id: new ObjectId(itemId) } } }, 
                 { new: true }
-                );
-            } catch (error) {
-                return error;
-            }  finally {
-                await this.client.close();
-            }
+            );
+        } catch (error) {
+            return error;
+        }  finally {
+            await this.client.close();
         }
+    }
 
-    async EditMenuItem(collection, id, itemId, name, price, image) {
-            try {
-                await this.client.connect();
-                return await this.client.db(this.dbName).collection(collection).updateOne(
-                    { _id: new ObjectId(id), 'menu._id': new ObjectId(itemId) },
-                    { $set: { 'menu.$.name': name, 'menu.$.price': price, 'menu.$.image': image } }
-                );
-            } catch (error) {
-                return error;
-            }  finally {
-                await this.client.close();
-            }
+    async EditMenuItem(collection, id, itemId, name, price, image, category) {
+        try {
+            await this.client.connect();
+            return await this.client.db(this.dbName).collection(collection).updateOne(
+                { _id: new ObjectId(id), 'menu._id': new ObjectId(itemId) },
+                { $set: { 'menu.$.name': name, 'menu.$.price': price, 'menu.$.image': image, 'menu.$.category': category } }
+            );
+        } catch (error) {
+            return error;
+        }  finally {
+            await this.client.close();
         }
+    }
 }
-
-
 
 module.exports = DB;
