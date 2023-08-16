@@ -2,6 +2,8 @@ const Restaurant = require('../models/restaurants');
 const restaurantsRoute = require('express').Router();
 require('dotenv').config();
 const nodemailer = require('nodemailer');
+const multer = require('multer');  //installed and imported to handle images
+const fs = require('fs') //imported to create new folder for images incase theres no folder
 
 restaurantsRoute.get('/', async (req, res) => {
     try {
@@ -17,6 +19,17 @@ restaurantsRoute.get('/:id', async (req, res) => {
         let { id } = req.params;
         let data = await Restaurant.FindById(id);
         res.status(200).json(data);
+    } catch (error) {
+        res.status(500).json({ error });
+    }
+});
+
+restaurantsRoute.get('/:id/orders', async (req, res) => {
+    try {
+        let { id } = req.params;
+        let data = await Restaurant.FindById(id);
+        let orders = data.orders || [];
+        res.status(200).json(orders);
     } catch (error) {
         res.status(500).json({ error });
     }
@@ -42,10 +55,30 @@ restaurantsRoute.post('/login', async (req, res) => {
     }
 });
 
-restaurantsRoute.post('/add', async (req, res) => {
+//creating images folder and saving image file.
+const storage = multer.diskStorage({
+    destination: function (req, file, cb){
+        const uploadDestination = 'images/';
+        //checks for images folder, if not found creates images folder
+        if(!fs.existsSync(uploadDestination)){
+            fs.mkdirSync(uploadDestination)
+        }
+        cb(null, uploadDestination);
+    },
+    filename: function(req, file, cb){
+        cb(null, Date.now() + '-' + file.originalname);
+    },
+});
+
+const upload = multer({storage: storage})
+
+restaurantsRoute.post('/add', upload.single('image'), async (req, res) => {
     try {
-        let { email, phone, name, location, address, foodType, image, availableSeats, locationSeats: { inside, outside, bar }, password, verify } = req.body;
-        let data = await new Restaurant(email, phone, name, location, address, foodType, image, availableSeats, { inside, outside, bar }, password, verify).InsertOne();
+        let { email, phone, name, location, address, foodType, availableSeats, locationSeats: { inside, outside, bar }, password, verify } = req.body;
+        // If an image was uploaded, you can access its details using req.file
+        const imageFilePath = req.file ? req.file.path : null;
+        let data = await new Restaurant(email, phone, name, location, address, foodType, imageFilePath, availableSeats, { inside, outside, bar }, password, verify).InsertOne();
+        
         res.status(201).json(data);
     } catch (error) {
         res.status(500).json({ error: error.message });
@@ -94,10 +127,31 @@ restaurantsRoute.put('/seats', async (req, res) => {
     }
 });
 
+restaurantsRoute.put('/inc/seats', async (req, res) => {
+    try {
+      let { id, seatType, numDiners } = req.body;
+      let data = await Restaurant.UpdateSeatsBack(id, seatType, numDiners);
+      res.status(200).json(data);
+    } catch (error) {
+      res.status(500).json({ error });
+    }
+});
+
 restaurantsRoute.put('/approved/:id', async (req, res) => {
     try {
       let { id } = req.params;
       let data = await Restaurant.ChangeApproved(id);
+      res.status(200).json(data);
+    } catch (error) {
+        res.status(500).json({ error });
+    }
+});
+
+restaurantsRoute.put('/:id/order/approved', async (req, res) => {
+    try {
+      let { id } = req.params;
+      let { orderId } = req.body;
+      let data = await Restaurant.OrderApproval(id, orderId);
       res.status(200).json(data);
     } catch (error) {
         res.status(500).json({ error });
@@ -127,7 +181,6 @@ restaurantsRoute.post('/sendemail', async (req, res) => {
     }
 });
 
-
 restaurantsRoute.delete('/delete/:id', async (req, res) =>{
     try {
         let { id } = req.params;
@@ -149,7 +202,16 @@ restaurantsRoute.delete('/menu/:id/delete', async (req, res) =>{
     }
 });
 
-
+restaurantsRoute.delete('/:id/orders/delete', async (req, res) => {
+    try {
+        let { id } = req.params;
+        let { orderId } = req.body;
+        let data = await Restaurant.DeleteOrder(id, orderId);
+        res.status(201).json(data);
+    } catch (error) {
+        res.status(500).json({ error : error.message });
+    }
+});
 
 
 module.exports = restaurantsRoute;

@@ -1,6 +1,7 @@
 import { View, Text, StyleSheet, Image, ScrollView, TouchableOpacity, Modal, FlatList, TouchableWithoutFeedback } from 'react-native';
 import React, { useContext, useEffect, useState } from 'react';
 import * as ImagePicker from 'expo-image-picker';
+import FormData from 'form-data'; // Import FormData for creating multipart/form-data
 import { MaterialIcons } from '@expo/vector-icons';
 import { ContextPage } from '../Context/ContextProvider';
 import { Button, TextInput, HelperText } from 'react-native-paper';
@@ -17,6 +18,13 @@ export default function BusinessRegistration(props) {
     const [searchQuery, setSearchQuery] = useState('');
     const [filteredCities, setFilteredCities] = useState([]);
     const [pressed, setPressed] = useState(false);
+    
+
+    useEffect(() => {
+      LoadFoodTypes();
+    }, []);
+
+    const sortedFoodTypes = [...foodTypes].sort((a, b) => a.name.localeCompare(b.name));
 
     const handlePressIn = () => {
       setPressed(true);
@@ -58,13 +66,14 @@ export default function BusinessRegistration(props) {
 
     const pickImage = async () => {
         let result = await ImagePicker.launchImageLibraryAsync({
-          mediaTypes: ImagePicker.MediaTypeOptions.All,
+          mediaTypes: ImagePicker.MediaTypeOptions.Images,
           allowsEditing: true,
           aspect: [3, 4],
           quality: 1,
       });
         if (!result.canceled) {
-          setImgB(result.assets[0].uri);
+          setImgB(result.assets[0]);
+
       }
     };
 
@@ -155,7 +164,7 @@ export default function BusinessRegistration(props) {
             onRequestClose={() => setFoodListVisible(false)}
           >
             <View style={styles.modal}>
-              {foodTypes.map((item) => (
+              {sortedFoodTypes.map((item) => (
                 <TouchableOpacity style={styles.modalTO}
                   key={item._id}
                   onPress={() => {

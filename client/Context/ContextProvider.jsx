@@ -1,6 +1,7 @@
 import React, { createContext, useState } from "react";
 import { apiUrl } from "../utils/api_url";
 import { sendNotification } from "../Pages/PushNotification";
+import { log } from "react-native-reanimated";
 
 export const ContextPage = createContext();
 
@@ -11,6 +12,8 @@ export default function ContextProvider(props) {
   const [password, setPassword] = useState();
   const [confirm, setConfirm] = useState();
   const [loginUser, setLoginUser] = useState();
+
+  const [userData, setUserData] = useState({});
 
   const [emailB, setEmailB] = useState();
   const [phoneB, setPhoneB] = useState();
@@ -30,6 +33,7 @@ export default function ContextProvider(props) {
   const [foodTypes, setFoodTypes] = useState([]);
   const [restaurants, setRestaurants] = useState([]);
   const [filteredRestaurants, setFilteredRestaurants] = useState([]);
+  const [restaurantOrders, setRestaurantOrders] = useState([]);
 
   const [location, setLocation] = useState();
   const [errorMsg, setErrorMsg] = useState();
@@ -60,7 +64,7 @@ export default function ContextProvider(props) {
       let data = await res.json();
       setUsers(data);
     } catch (error) {
-      console.log('LoadUsersContext',{ error:error.message } );
+      console.log({ error } );
     }
   };
 
@@ -79,6 +83,16 @@ export default function ContextProvider(props) {
       let res = await fetch(`${apiUrl}/api/restaurants`);
       let data = await res.json();
       setRestaurants(data);
+    } catch (error) {
+      console.log({ error });
+    } 
+  }
+
+  const LoadRestaurantOrders = async (id) => {
+    try {
+      let res = await fetch(`${apiUrl}/api/restaurants/${id}/orders`);
+      let data = res.json();
+      setRestaurantOrders(data)
     } catch (error) {
       console.log({ error });
     } finally {
@@ -154,6 +168,17 @@ export default function ContextProvider(props) {
     }
   };
 
+  const fetchUserData = async (userId) => {
+    try {
+      let res = await fetch(`${apiUrl}/api/users/${userId}`);
+      let data = await res.json();
+      setUserData(data);
+      return data;
+    } catch (error) {
+      console.error('Error fetching user data:', error);
+    }
+  }
+
   const addUser = async (user) => {
     try {
       let res = await fetch(`${apiUrl}/api/users/add`, {
@@ -164,9 +189,9 @@ export default function ContextProvider(props) {
         },
       });
       let data = await res.json();
-      console.log('addUser context',data);
+      console.log(data);
     } catch (error) {
-      console.error({error:error.message});
+      console.error(error);
     } finally {
       LoadUsers();
     }
@@ -188,14 +213,24 @@ export default function ContextProvider(props) {
 
   const addRestaurant = async (business) => {
     try {
-      let res = await fetch(`${apiUrl}/api/restaurants/add`, {
-        method: "POST",
-        body: JSON.stringify(business),
+      const formData = new FormData();
+      formData.append('image', {
+        uri: business.image,
+        type: 'image/jpeg', // Adjust according to the image type
+        name: 'image.jpg', // Adjust the name if needed
+      });
+
+      formData.append('restaurantData', JSON.stringify(business)); // Send other restaurant data
+  
+      const res = await fetch(`${apiUrl}/api/restaurants/add`, {
+        method: 'POST',
+        body: formData,  //JSON.stringify(business)
         headers: {
-          "Content-Type": "application/json",
+          'Content-Type': 'multipart/form-data',
         },
       });
       let data = await res.json();
+      
       console.log(data);
     } catch (error) {
       console.error(error);
@@ -203,6 +238,23 @@ export default function ContextProvider(props) {
       LoadRestaurants();
     }
   };
+
+  const addImage = async(formData)=>{
+    try {
+      const response = await fetch(`${apiUrl}/api/restaurants/`, {
+        method: 'POST',
+        body: formData,
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+      });
+
+      const data = await response.json();
+      console.log('Image uploaded:', data);
+    } catch (error) {
+      console.error('Error uploading image:', error);
+    }
+  }
 
   const deleteRestaurant = async (id) => {
     try {
@@ -220,14 +272,15 @@ export default function ContextProvider(props) {
 
   const changeApprovedRestaurant = async (id, email, name) => {
     try {
-      console.log("context " + id);
       let res = await fetch(`${apiUrl}/api/restaurants/approved/${id}`, {
         method: "PUT",
       });
       let data = await res.json();
       if (data) {
         console.log(data);
-        sendEmail(email, name);
+        let subject = 'Restaurant Approval';
+        let message = `Congratulations! Your restaurant ${name} has been approved.`;
+        await sendEmail(email, subject, message);
       }
     } catch (error) {
       console.error({error: error.message});
@@ -236,12 +289,9 @@ export default function ContextProvider(props) {
     }
   };
 
-  const sendEmail = async (email, name) => {
-    console.log("function new send email start");
+  const sendEmail = async (email, subject, message) => {
     try {
-      let subject = 'Restaurant Approval';
-      let message = `Congratulations! Your restaurant ${name} has been approved.`;
-      console.log(subject, message);
+      //console.log(subject, message);
       let res = await fetch(`${apiUrl}/api/restaurants/sendemail`, {
         method: "POST",
         body: JSON.stringify({ email, subject, message }),
@@ -264,30 +314,6 @@ export default function ContextProvider(props) {
     }
   };
 
-
-  // const editUser = async (id) => {
-  //   try {
-  //     console.log('editUser context', id);
-  //     let res = await fetch(`${apiUrl}/api/users/edit/${id}`, {
-  //       method:"PUT",
-  //       headers: {
-  //         "Content-Type": "application/json",
-  //       },
-  //     })
-  //     console.log('after fetching from api');
-  //     if(res.ok){
-  //     let data = await res.json();
-  //     console.log(data, 'data log');
-  //     await LoadUsers(); // Wait for LoadRestaurants to complete
-  //     }else{
-  //       console.error('res not ok', res.statusText)
-  //     }
-  //   } catch (error) {
-  //     console.log('context error', error.message)
-  //   }finally{
-  //     LoadUsers();
-  //   }
-  // }
 
   const findRestaurants = async (location, foodType, diners) => {
     try {
@@ -332,27 +358,51 @@ export default function ContextProvider(props) {
         body: JSON.stringify({ id, seatType, numDiners }),
       });
       if (res.status === 200) {
-        // Successful response
         const data = await res.json();
         console.log(data);
         if (data) {
-          sendNotification('Reservation Request Send', 'We will keep you informed once your reservation request is approved by the restaurant.');
-          //handle reservation requests
-          AddReservationRequest(id, loginUser._id, seatType, numDiners);
+          return data;
         }
-        return data;
       } else {
-        // Error response
         const errorData = await res.json();
-        console.error('Error updating seats:', errorData);
+        console.log('Error updating seats:', errorData);
       }
     } catch (error) {
       console.error('Error updating seats:', error);
+    }  finally {
+      LoadRestaurants();
     }
   };
 
-  const AddReservationRequest = async (id, userId, seatType, diners) => {
+  const updateSeatsBack = async (id, seatType, numDiners) => {
     try {
+      let res = await fetch(`${apiUrl}/api/restaurants/inc/seats`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ id, seatType, numDiners }),
+      });
+      if (res.status === 200) {
+        const data = await res.json();
+        console.log(data);
+        if (data) {
+          return data;
+        }
+      } else {
+        const errorData = await res.json();
+        console.log('Error updating seats:', errorData);
+      }
+    } catch (error) {
+      console.error('Error updating seats:', error);
+    }  finally {
+      LoadRestaurants();
+    }
+  };
+
+  const AddReservationRequest = async (id, seatType, diners, email) => {
+    try {
+      let userId = await loginUser._id;
       let res = await fetch(`${apiUrl}/api/restaurants/orders/${id}`, {
           method: "POST",
           body: JSON.stringify({ userId, seatType, diners }),
@@ -366,6 +416,14 @@ export default function ContextProvider(props) {
           
           try {
             data = await JSON.parse(text);
+            
+            //handle reservation requests
+            let subject = 'New Reservation';
+            let message = `We would like to inform you that a new reservation has been made at your restaurant.\n
+            To manage and approve the reservation, please access the app.`;
+            await sendEmail(email, subject, message);
+            sendNotification('Reservation Request Send', 'We will keep you informed once your reservation request is approved by the restaurant.');
+          
           } catch (error) {
             throw new Error('Invalid JSON response');
           }
@@ -376,6 +434,54 @@ export default function ContextProvider(props) {
         }
     } catch (error) {
         console.log(error);
+    }  finally {
+      LoadRestaurantOrders(id);
+    }
+  }
+
+  const changeApprovedOrder = async (id, orderId, email, seatType, numDiners) => {
+    try {
+      let res = await fetch(`${apiUrl}/api/restaurants/${id}/order/approved`, {
+        method: "PUT",
+        body: JSON.stringify({ orderId }),
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+      let data = await res.json();
+      if (data) {
+        console.log(data);
+        await updateSeats(id, seatType, numDiners);
+        let subject = 'Order Approval';
+        let message = `Congratulations! Your Order number: ${orderId} has been approved.\n
+        You requested ${numDiners} seat(s) of type ${seatType}.\nThank you for choosing us!`;
+        await sendEmail(email, subject, message);
+      }
+    } catch (error) {
+      console.error({error: error.message});
+    } finally {
+      LoadRestaurantOrders(id);
+    }
+  };
+
+  const deleteOrder = async (id, orderId) => {
+    try {
+      let res = await fetch(`${apiUrl}/api/restaurants/${id}/orders/delete`, {
+        method: "DELETE",
+        body: JSON.stringify({orderId}),
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+      console.log(res.status);
+      if (res.ok) {
+        let data = await res.json();
+        console.log(data);
+      }
+    } catch (error) {
+     console.log(error); 
+    } finally {
+      LoadRestaurantOrders(id);
     }
   }
 
@@ -462,6 +568,7 @@ export default function ContextProvider(props) {
     LoadFoodTypes,
     LoadRestaurants,
     users,
+    userData, setUserData, fetchUserData,
     checkEmail, checkUsername,
     checkLoginUser, checkLoginRestaurant,
     location,setLocation,
@@ -475,7 +582,7 @@ export default function ContextProvider(props) {
     restaurants,setRestaurants,
     findRestaurants,
     isLoading,setIsLoading,
-    updateSeats,
+    updateSeats, AddReservationRequest,
     filteredRestaurants, setFilteredRestaurants,
     deleteUser,
     deleteRestaurant,
@@ -496,10 +603,10 @@ export default function ContextProvider(props) {
     addRestaurant,
     checkEmailBusiness,
     changeApprovedRestaurant,
-    // editUser,
     addItem, deleteItem, editItem,
+    restaurantOrders, setRestaurantOrders, LoadRestaurantOrders,
+    deleteOrder, updateSeatsBack, changeApprovedOrder,
   };
-  
 
   return (
     <ContextPage.Provider value={value}>{props.children}</ContextPage.Provider>
