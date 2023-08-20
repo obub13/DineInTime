@@ -19,12 +19,7 @@ import ContextProvider from './Context/ContextProvider';
 import React, { useEffect } from 'react';
 
 import { apiUrl } from './utils/api_url';
-import { AppRegistry, BackHandler, I18nManager } from 'react-native';
-import { firebase } from '@react-native-firebase/storage';
-import App from './App';
-import { name as appName } from './app.json';
-firebase.initializeApp(); // Initialize Firebase
-AppRegistry.registerComponent(appName, () => App);
+import { BackHandler, I18nManager } from 'react-native';
 
 
 const theme =  createTheme({
