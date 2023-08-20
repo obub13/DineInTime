@@ -26,8 +26,6 @@ import { name as appName } from './app.json';
 firebase.initializeApp(); // Initialize Firebase
 AppRegistry.registerComponent(appName, () => App);
 
-//try update
-
 
 const theme =  createTheme({
   ...DefaultTheme,
