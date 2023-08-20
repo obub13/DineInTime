@@ -6,6 +6,7 @@ import { MaterialIcons } from '@expo/vector-icons';
 import { ContextPage } from '../Context/ContextProvider';
 import { Button, TextInput, HelperText } from 'react-native-paper';
 
+
 export default function BusinessRegistration(props) {
 
     let { foodTypes, LoadFoodTypes, emailB, setEmailB, phoneB, setPhoneB, nameB, setNameB, address, setAddress, city, setCity, foodTypeB, setFoodTypeB, imgB, setImgB, 

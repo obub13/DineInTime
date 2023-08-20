@@ -1,7 +1,7 @@
 import React, { createContext, useState } from "react";
 import { apiUrl } from "../utils/api_url";
 import { sendNotification } from "../Pages/PushNotification";
-import { log } from "react-native-reanimated";
+
 
 export const ContextPage = createContext();
 
