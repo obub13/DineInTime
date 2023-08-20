@@ -4,6 +4,7 @@ import { createDrawerNavigator } from '@react-navigation/drawer';
 import { MD3LightTheme as DefaultTheme, MD3LightTheme, PaperProvider } from 'react-native-paper';
 import { createTheme } from '@mui/material/styles';
 
+
 import Page1 from './Pages/Page1';
 import Login from './Pages/Login';
 import Register from './Pages/Register';
@@ -18,7 +19,14 @@ import ContextProvider from './Context/ContextProvider';
 import React, { useEffect } from 'react';
 
 import { apiUrl } from './utils/api_url';
-import { BackHandler, I18nManager } from 'react-native';
+import { AppRegistry, BackHandler, I18nManager } from 'react-native';
+import { firebase } from '@react-native-firebase/storage';
+import App from './App';
+import { name as appName } from './app.json';
+firebase.initializeApp(); // Initialize Firebase
+AppRegistry.registerComponent(appName, () => App);
+
+//try update
 
 
 const theme =  createTheme({
