@@ -7,7 +7,6 @@ class Restaurant {
     phone;
     name;
     location; 
-    address;
     foodType; 
     image;
     availableSeats; 
@@ -16,12 +15,11 @@ class Restaurant {
     verify;
     approved;
 
-    constructor(email, phone, name, location, address, foodType, image, availableSeats, { inside, outside, bar }, password, verify) {
+    constructor(email, phone, name, location, foodType, image, availableSeats, { inside, outside, bar }, password, verify) {
         this.email = email;
         this.phone = phone;
         this.name = name;
         this.location = location;
-        this.address = address;
         this.foodType = foodType;
         this.image = image;
         this.availableSeats = availableSeats;
@@ -55,6 +53,10 @@ class Restaurant {
         return await new DB().FindRestaurantsByInputs(Restaurant.collection, location, foodType, diners);
     }
 
+    static async FindRestaurants(foodType, diners) {
+        return await new DB().FindManyRestaurants(Restaurant.collection, foodType, diners);
+    }
+
     static async UpdateSeats(id, seatType, numDiners) {
         return await new DB().UpdateSeatsByReservation(Restaurant.collection, id, seatType, numDiners);
     }
@@ -71,6 +73,10 @@ class Restaurant {
         return await new DB().UpdateOrder(Restaurant.collection, id, userId, seatType, diners);
     }
 
+    static async AddReview(id, user, rating, description) {
+        return await new DB().InsertReview(Restaurant.collection, id, user, rating, description);
+    }
+
     static async OrderApproval(id, orderId) {
         return await new DB().UpdateOrderApproval(Restaurant.collection, id, orderId);
     }
@@ -78,7 +84,7 @@ class Restaurant {
     static async DeleteOrder(id, orderId) {
         return await new DB().DeleteOrder(Restaurant.collection, id, orderId);
     }
-    
+
     static async ChangeApproved(id) {
         return await new DB().ApprovedRestaurant(Restaurant.collection, id);
     }
@@ -95,12 +101,16 @@ class Restaurant {
         return await new DB().DeleteMenuItem(Restaurant.collection, id, itemId);
     }
 
+    static async DeleteReview(id, reviewId) {
+        return await new DB().DeleteReviewItem(Restaurant.collection, id, reviewId);
+    }
+
     static async EditMenu(id, itemId, name, price, image, category) {
         return await new DB().EditMenuItem(Restaurant.collection, id, itemId, name, price, image, category);
     }
 
-    static async Upload(id, imageUrl) {
-        return await new DB().Upload(Restaurant.collection, id, image);
+    static async EditReview(id, reviewId, user, rating, description) {
+        return await new DB().EditReviewItem(Restaurant.collection, id, reviewId, user, rating, description);
     }
 }
 

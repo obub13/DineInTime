@@ -10,6 +10,7 @@ export default function Login(props) {
   
   const { expoPushToken, setExpoPushToken, userName, password, setUserName, setPassword, users, LoadUsers, setLoginUser, restaurants, LoadRestaurants, LoadFoodTypes, checkLoginUser, checkLoginRestaurant, } = useContext(ContextPage);
   
+  
   const [isPasswordVisible, setIsPasswordVisible] = useState(false);
   const [pressed, setPressed] = useState(false);
   const [isRestaurantOwner, setIsRestaurantOwner] = useState(false);
@@ -59,15 +60,23 @@ if (!loaded) {
     try {
       if (!isRestaurantOwner) {
         const user = await checkLoginUser(userName, password);
-        setLoginUser(user);
+        // setLoginUser(user);
         if (user) {
            // Successfully logged in, now get the Expo push token and send a notification
+           console.log('user found ');
           const token = await registerForPushNotificationsAsync();
-          setExpoPushToken(token);
+          console.log(token, ' after registratingforpushnotificationasync function');
+          // setExpoPushToken(token);
+          console.log('setting token for pushnotfication');
           await sendPushNotification('Login Successful', 'Welcome to the app!', token);
+          console.log('sendpushnotification');
           if (userName === "Admin1" || userName === "Admin2") {
+            setLoginUser(user);
+            setExpoPushToken(token);
             props.navigation.navigate("Admin");
           } else {
+            setLoginUser(user);
+            setExpoPushToken(token);
             props.navigation.navigate("Main");
           }
         } else {
@@ -79,8 +88,8 @@ if (!loaded) {
         if (restaurant) {
           if (restaurant.approved) {
             const token = await registerForPushNotificationsAsync();
-            setExpoPushToken(token);
             await sendPushNotification('Login Successful', 'Welcome to the app!', token);
+            setExpoPushToken(token);
             props.navigation.navigate('RestaurantDetails', { userType: 'restaurantOwner', restaurant: restaurant  });
           } else {
             //alert("Your restaurant hasn't been approved yet. Please wait for approval.");

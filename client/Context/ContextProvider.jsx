@@ -406,8 +406,10 @@ export default function ContextProvider(props) {
               "Content-Type": "application/json",
             },
           });
+          console.log('fetch success nearby', res);
           if (res.ok) {
             const text = await res.text();
+            console.log('text = res.text', text);
             let data;
       
             try {
@@ -423,7 +425,7 @@ export default function ContextProvider(props) {
             
             return data;
           } else {
-            throw new Error(`Request failed ${res.status}`);
+            throw new Error(`Request failed ${res.status.message}`);
           }
     } catch (error) {
         console.log(error);
