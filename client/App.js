@@ -4,7 +4,6 @@ import { createDrawerNavigator } from '@react-navigation/drawer';
 import { MD3LightTheme as DefaultTheme, MD3LightTheme, PaperProvider } from 'react-native-paper';
 import { createTheme } from '@mui/material/styles';
 
-
 import Page1 from './Pages/Page1';
 import Login from './Pages/Login';
 import Register from './Pages/Register';
@@ -15,12 +14,12 @@ import Charts from './Pages/Charts';
 import BusinessRegistration from './Pages/BusinessRegistration';
 import RestaurantDetails from './Pages/RestaurantDetails';
 import Reservations from './Pages/Reservations';
+import Reviews from './Pages/Reviews';
 import ContextProvider from './Context/ContextProvider';
 import React, { useEffect } from 'react';
 
 import { apiUrl } from './utils/api_url';
 import { BackHandler, I18nManager } from 'react-native';
-
 
 const theme =  createTheme({
   ...DefaultTheme,
@@ -175,6 +174,7 @@ export default function App() {
         <Stack.Screen name="BusinessRegistration" component={BusinessRegistration} />
         <Stack.Screen name="RestaurantDetails" component={RestaurantDetails} />
         <Stack.Screen name="Reservations" component={Reservations} />
+        <Stack.Screen name="Reviews" component={Reviews} />
       </Stack.Navigator>
       </MyDrawer>
   </NavigationContainer>

@@ -9,6 +9,13 @@ class DB {
     emailService;
     emailUsername;
     emailPassword;
+    googleApi;
+    firebaseApi;
+    authDomain;
+    projectId;
+    storageBucket;
+    messagingSenderId;
+    appId;
 
     constructor() {
         this.client = new MongoClient(process.env.DB_URI);
@@ -16,6 +23,38 @@ class DB {
         this.emailService = process.env.EMAIL_SERVICE;
         this.emailUsername = process.env.EMAIL_USERNAME;
         this.emailPassword = process.env.EMAIL_PASSWORD;
+        this.googleApi = process.env.GOOGLE_MAPS_API_KEY;
+        this.firebaseApi = process.env.FIREBASE_API_KEY;
+        this.authDomain = process.env.AUTH_DOMAIN;
+        this.projectId = process.env.PROJECT_ID;
+        this.storageBucket = process.env.STORAGE_BUCKET;
+        this.messagingSenderId = process.env.MESSAGING_SENDER_ID;
+        this.appId = process.env.APP_ID;
+    }
+
+    async getGoogleMapsApiKey() {
+        try {
+            const apiKey = this.googleApi;
+            return apiKey; 
+        } catch (error) {
+            return error
+        }
+    }
+
+    async getFirebaseConfig() {
+        try {
+            const firebaseConfig = {
+                apiKey: this.firebaseApi,
+                authDomain: this.authDomain,
+                projectId: this.projectId,
+                storageBucket: this.storageBucket,
+                messagingSenderId: this.messagingSenderId,
+                appId: this.appId,
+            };
+            return firebaseConfig; 
+        } catch (error) {
+            return error
+        }
     }
     
     async FindAll(collection, query = {}, projection = {}) {
@@ -124,6 +163,22 @@ class DB {
         }
     }
 
+    async FindManyRestaurants(collection, foodType, diners) {
+        try {
+          await this.client.connect();
+          const query = {
+            foodType: foodType,
+            availableSeats: { $gte: parseInt(diners) }
+          };
+          return await this.client.db(this.dbName).collection(collection).find(query).toArray();
+        } catch (error) {
+          return error;
+        } finally {
+          await this.client.close();
+        }
+      }
+      
+
     async UpdateSeatsByReservation(collection, id, seatType, numDiners) {
         try {
             await this.client.connect();   
@@ -159,7 +214,7 @@ class DB {
         } finally {
           await this.client.close();
         }
-    } 
+    }   
 
     async DeleteById(collection, id) {
         try {
@@ -186,6 +241,27 @@ class DB {
             return await this.client.db(this.dbName).collection(collection).updateOne(
                 { _id: new ObjectId(id) },
                 { $push: { orders: order } }
+            );
+        } catch (error) {
+            return error;
+        }  finally {
+            await this.client.close();
+        }
+    }
+
+    async InsertReview(collection, id, user, rating, description) {
+        try {
+            await this.client.connect();
+            let review = {
+                _id : new ObjectId(),
+                user: user,
+                rating: parseInt(rating),
+                description: description,
+                createdAt: new Date().toLocaleString('en-US', { timeZone: 'Asia/Jerusalem' })
+            };
+            return await this.client.db(this.dbName).collection(collection).updateOne(
+                { _id: new ObjectId(id) },
+                { $push: { reviews: review } }
             );
         } catch (error) {
             return error;
@@ -313,12 +389,42 @@ class DB {
         }
     }
 
+    async DeleteReviewItem(collection, id, reviewId) {
+        try {
+            await this.client.connect();
+            return await this.client.db(this.dbName).collection(collection).updateOne(
+                { _id: new ObjectId(id) },
+                { $pull: { reviews: { _id: new ObjectId(reviewId) } } }, 
+                { new: true }
+            );
+        } catch (error) {
+            return error;
+        }  finally {
+            await this.client.close();
+        }
+    }
+
     async EditMenuItem(collection, id, itemId, name, price, image, category) {
         try {
             await this.client.connect();
             return await this.client.db(this.dbName).collection(collection).updateOne(
                 { _id: new ObjectId(id), 'menu._id': new ObjectId(itemId) },
                 { $set: { 'menu.$.name': name, 'menu.$.price': price, 'menu.$.image': image, 'menu.$.category': category } }
+            );
+        } catch (error) {
+            return error;
+        }  finally {
+            await this.client.close();
+        }
+    }
+
+    async EditReviewItem(collection, id, reviewId, user, rating, description) {
+        try {
+            await this.client.connect();
+            let createdAt = new Date().toLocaleString('en-US', { timeZone: 'Asia/Jerusalem' })
+            return await this.client.db(this.dbName).collection(collection).updateOne(
+                { _id: new ObjectId(id), 'reviews._id': new ObjectId(reviewId) },
+                { $set: { 'reviews.$.user': user, 'reviews.$.rating': rating, 'reviews.$.description': description, 'reviews.$.createdAt': createdAt } }
             );
         } catch (error) {
             return error;

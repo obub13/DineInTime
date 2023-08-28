@@ -6,10 +6,25 @@ const path = require('path');
 
 const PORT = process.env.PORT || 5500;
 
+const DB = require('../server/utils/DB'); 
+const db = new DB();
+
 const server = express();
 server.use(cors());
 server.use(express.json());
 //server.use(express.static(path.join(__dirname, '../client', 'dist')));
+
+// Route to provide Google Maps API key
+server.get('/api/google-maps-api-key', async(req, res) => {
+    const apiKey = await db.getGoogleMapsApiKey();
+    res.json({ apiKey });
+});
+
+// Route to provide firebase config
+server.get('/api/firebase-config', async(req, res) => {
+    const firebaseConfig = await db.getFirebaseConfig(); 
+    res.json({ firebaseConfig });
+});
 
 server.use('/api/users', require('./routes/usersRoute'));
 

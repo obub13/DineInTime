@@ -1,7 +1,11 @@
 import React, { createContext, useState } from "react";
 import { apiUrl } from "../utils/api_url";
-import { sendNotification } from "../Pages/PushNotification";
-
+import { sendPushNotification } from "../Pages/PushNotification";
+import * as ImagePicker from 'expo-image-picker';
+import firebase from 'firebase/compat/app';
+import 'firebase/compat/auth'
+import 'firebase/compat/firestore'
+import "firebase/compat/storage";
 
 export const ContextPage = createContext();
 
@@ -14,6 +18,8 @@ export default function ContextProvider(props) {
   const [loginUser, setLoginUser] = useState();
 
   const [userData, setUserData] = useState({});
+  const [expoPushToken, setExpoPushToken] = useState('');
+  const [googleMapsApiKey, setGoogleMapsApiKey] = useState('');
 
   const [emailB, setEmailB] = useState();
   const [phoneB, setPhoneB] = useState();
@@ -34,6 +40,11 @@ export default function ContextProvider(props) {
   const [restaurants, setRestaurants] = useState([]);
   const [filteredRestaurants, setFilteredRestaurants] = useState([]);
   const [restaurantOrders, setRestaurantOrders] = useState([]);
+  const [restaurantReviews, setRestaurantReviews] = useState([]);
+
+  const [rating, setRating] = useState(0);
+  const [description, setDescription] = useState('');
+  const [loadingReviews, setLoadingReviews] = useState(true);
 
   const [location, setLocation] = useState();
   const [errorMsg, setErrorMsg] = useState();
@@ -44,6 +55,11 @@ export default function ContextProvider(props) {
   const [dinersListVisible, setDinersListVisible] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
 
+  const [isUploading, setIsUploading] = useState(false);
+  const [progress, setProgress] = useState(0);
+  const [error, setError] = useState(null);
+  const [imgSrc, setImgSrc] = useState('');
+  const [firebaseConfig, setFirebaseConfig] = useState('');
 
   const dinersList = [
     { key: 1, value: "1" },
@@ -57,6 +73,32 @@ export default function ContextProvider(props) {
     { key: 9, value: "9" },
     { key: 10, value: "10" },
   ];
+
+  const emailRegex = /^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/g
+  const phoneRegex = /^(?:(?:(\+?972|\(\+?972\)|\+?\(972\))(?:\s|\.|-)?([1-9]\d?))|(0[23489]{1})|(0[57]{1}[0-9]))(?:\s|\.|-)?([^0\D]{1}\d{2}(?:\s|\.|-)?\d{4})$/gm
+  const usernameRegex = /^(?=.{3,20}$)(?![_.-])(?!.*[_.-]{2})[a-zA-Z0-9_-]+([^._-])$/
+  const passwordRegex = /^((?=\S*?[A-Z])(?=\S*?[a-z])(?=\S*?[0-9]).{5,})\S$/
+  const numbersRegex = /^[0-9]+$/
+
+  const isValidEmail = (email) => {
+    return emailRegex.test(email);
+  }
+
+  const isValidPhone = (phone) => {
+    return phoneRegex.test(phone);
+  }
+
+  const isValidUsername = (username) => {
+    return usernameRegex.test(username);
+  }
+
+  const isValidPassword = (password) => {
+    return passwordRegex.test(password);
+  }
+
+  const isValidNumbers = (number) => {
+    return numbersRegex.test(number);
+  }
 
   const LoadUsers = async () => {
     try {
@@ -91,12 +133,47 @@ export default function ContextProvider(props) {
   const LoadRestaurantOrders = async (id) => {
     try {
       let res = await fetch(`${apiUrl}/api/restaurants/${id}/orders`);
-      let data = res.json();
-      setRestaurantOrders(data)
+      let data = await res.json();
+      setRestaurantOrders(data);
     } catch (error) {
       console.log({ error });
     } finally {
       LoadRestaurants();
+    }
+  }
+
+  const LoadRestaurantReviews = async (id) => {
+    try {
+      let res = await fetch(`${apiUrl}/api/restaurants/${id}/reviews`);
+      let data = await res.json();
+      setRestaurantReviews(data);
+    } catch (error) {
+      console.log({ error });
+    } finally {
+      LoadRestaurants();
+    }
+  }
+
+  const GetGoogleApi = async () => {
+    try {
+      let res = await fetch(`${apiUrl}/api/google-maps-api-key`);
+      let data = await res.json();
+      setGoogleMapsApiKey(data.apiKey);
+    } catch (error) {
+      console.log({ error });
+    }
+  }
+
+  const GetFirebaseConfig = async () => {
+    try {
+      let res = await fetch(`${apiUrl}/api/firebase-config`);
+      let data = await res.json();
+      setFirebaseConfig(data.firebaseConfig);
+      if (firebaseConfig) {
+        firebase.initializeApp(firebaseConfig);
+      }
+    } catch (error) {
+      console.log({ error });
     }
   }
 
@@ -213,24 +290,14 @@ export default function ContextProvider(props) {
 
   const addRestaurant = async (business) => {
     try {
-      const formData = new FormData();
-      formData.append('image', {
-        uri: business.image,
-        type: 'image/jpeg', // Adjust according to the image type
-        name: 'image.jpg', // Adjust the name if needed
-      });
-
-      formData.append('restaurantData', JSON.stringify(business)); // Send other restaurant data
-  
-      const res = await fetch(`${apiUrl}/api/restaurants/add`, {
-        method: 'POST',
-        body: formData,  //JSON.stringify(business)
+      let res = await fetch(`${apiUrl}/api/restaurants/add`, {
+        method: "POST",
+        body: JSON.stringify(business),
         headers: {
-          'Content-Type': 'multipart/form-data',
+          "Content-Type": "application/json",
         },
       });
       let data = await res.json();
-      
       console.log(data);
     } catch (error) {
       console.error(error);
@@ -238,23 +305,6 @@ export default function ContextProvider(props) {
       LoadRestaurants();
     }
   };
-
-  const addImage = async(formData)=>{
-    try {
-      const response = await fetch(`${apiUrl}/api/restaurants/`, {
-        method: 'POST',
-        body: formData,
-        headers: {
-          'Content-Type': 'multipart/form-data',
-        },
-      });
-
-      const data = await response.json();
-      console.log('Image uploaded:', data);
-    } catch (error) {
-      console.error('Error uploading image:', error);
-    }
-  }
 
   const deleteRestaurant = async (id) => {
     try {
@@ -291,7 +341,6 @@ export default function ContextProvider(props) {
 
   const sendEmail = async (email, subject, message) => {
     try {
-      //console.log(subject, message);
       let res = await fetch(`${apiUrl}/api/restaurants/sendemail`, {
         method: "POST",
         body: JSON.stringify({ email, subject, message }),
@@ -320,6 +369,39 @@ export default function ContextProvider(props) {
         let res = await fetch(`${apiUrl}/api/restaurants/find`, {
             method: "POST",
             body: JSON.stringify({ location, foodType, diners }),
+            headers: {
+              "Content-Type": "application/json",
+            },
+          });
+          if (res.ok) {
+            const text = await res.text();
+            let data;
+      
+            try {
+              data = await JSON.parse(text);
+            } catch (error) {
+              throw new Error('Invalid JSON response');
+            }
+            console.log(data);
+            if (data) {
+              setFilteredRestaurants(data);
+              setIsLoading(false);
+            }
+            
+            return data;
+          } else {
+            throw new Error(`Request failed ${res.status}`);
+          }
+    } catch (error) {
+        console.log(error);
+    }
+  };
+
+  const nearbyRestaurants = async (foodType, diners) => {
+    try {
+        let res = await fetch(`${apiUrl}/api/restaurants/near`, {
+            method: "POST",
+            body: JSON.stringify({ foodType, diners }),
             headers: {
               "Content-Type": "application/json",
             },
@@ -422,8 +504,7 @@ export default function ContextProvider(props) {
             let message = `We would like to inform you that a new reservation has been made at your restaurant.\n
             To manage and approve the reservation, please access the app.`;
             await sendEmail(email, subject, message);
-            sendNotification('Reservation Request Send', 'We will keep you informed once your reservation request is approved by the restaurant.');
-          
+            await sendPushNotification('Reservation Request Send', 'We will keep you informed once your reservation request is approved by the restaurant.', expoPushToken);  
           } catch (error) {
             throw new Error('Invalid JSON response');
           }
@@ -555,9 +636,213 @@ export default function ContextProvider(props) {
     }
   };
 
+  const addReview = async (id, user, rating, description) => {
+    try {
+      let res = await fetch(`${apiUrl}/api/restaurants/reviews/${id}`, {
+          method: "POST",
+          body: JSON.stringify({ user, rating, description }),
+          headers: {
+            "Content-Type": "application/json",
+          },
+        });
+        if (res.ok) {
+          let data = await res.json();
+          console.log(data);  
+          return data;
+        } else {
+          throw new Error(`Request failed ${res.status}`);
+        }
+    } catch (error) {
+        console.log(error);
+    }  finally {
+      LoadRestaurantReviews(id);
+    }
+  }
+
+  const editReview = async (id, reviewId, user, rating, description) => {
+    try {
+      let res = await fetch(`${apiUrl}/api/restaurants/edit/${id}/reviews`, {
+        method: "PUT",
+        body: JSON.stringify({ reviewId, user, rating, description }),
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+      if (res.ok) {
+        const text = await res.text();
+        let data;
+        
+        try {
+          data = await JSON.parse(text);
+        } catch (error) {
+          throw new Error('Invalid JSON response');
+        }
+        console.log(data);  
+        return data;
+      } else {
+        throw new Error(`Request failed ${res.status}`);
+      }
+    } catch (error) {
+      console.error(error);
+    } finally {
+      LoadRestaurants();
+    }
+  }
+
+  const deleteReview = async (id, reviewId) => {
+    try {
+      let res = await fetch(`${apiUrl}/api/restaurants/reviews/${id}/delete`, {
+        method: "DELETE",
+        body: JSON.stringify({reviewId}),
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+      let data = await res.json();
+      console.log(data);
+    } catch (error) {
+      console.error(error);
+    } finally {
+      LoadRestaurants();
+    }
+  };
+
+  const takePictureAndUpload = async () => {
+    return imgSrc;
+  }
+
+  const uploadImageFromDevice = async () => {
+    console.log("uploadImageFromDevice run")
+    let imgURI = null;
+    let result = await ImagePicker.launchImageLibraryAsync({
+      mediaTypes: ImagePicker.MediaTypeOptions.Images,
+      allowsEditing: true,
+      aspect: [4, 4],
+      quality: 1,
+    });
+
+    if (!result.canceled) {
+      imgURI = result.assets[0].uri;
+    }
+
+    return imgURI;
+  };
+
+  const getBlobFromUri = async (uri) => {
+    const blob = await new Promise((resolve, reject) => {
+      const xhr = new XMLHttpRequest();
+      xhr.onload = function () {
+        resolve(xhr.response);
+      };
+      xhr.onerror = function (e) {
+        reject(new TypeError("Network request failed"));
+      };
+      xhr.responseType = "blob";
+      xhr.open("GET", uri, true);
+      xhr.send(null);
+    });
+
+    console.log('FINISHING BLOB FUNC'); 
+    return blob;
+  };
+
+  const manageFileUpload = async (
+    fileBlob,
+    { onStart, onProgress, onComplete, onFail }
+  ) => {
+    console.log('starting mngfileupload function');
+    const imgName = "img-" + new Date().getTime();
+
+    const storageRef = firebase.storage().ref(`images/${imgName}.jpg`);
+
+    console.log("uploading file", imgName);
+
+    // Create file metadata including the content type
+    const metadata = {
+      contentType: "image/jpeg",
+    };
+
+    // Trigger file upload start event
+    onStart && onStart();
+    const uploadTask = storageRef.put(fileBlob, metadata);
+    // Listen for state changes, errors, and completion of the upload.
+    uploadTask.on(
+      "state_changed",
+      (snapshot) => {
+        // Get task progress, including the number of bytes uploaded and the total number of bytes to be uploaded
+        const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+
+        // Monitor uploading progress
+        onProgress && onProgress(Math.fround(progress).toFixed(2));
+      },
+      (error) => {
+        // Something went wrong - dispatch onFail event with error  response
+        onFail && onFail(error);
+      },
+      () => {
+        // Upload completed successfully, now we can get the download URL
+
+        uploadTask.snapshot.ref.getDownloadURL().then((downloadURL) => {
+          // dispatch on complete event
+          onComplete && onComplete(downloadURL);
+
+          console.log("File available at", downloadURL);
+          return downloadURL;
+        });
+      }
+    );
+  };
+
+  const handleLocalImageUpload = async () => {
+    console.log("handleLocalImageUpload run");
+    let fileURI;
+    
+    if (!imgSrc) {
+      fileURI = await uploadImageFromDevice();
+    } else {
+      fileURI = await takePictureAndUpload();
+    }
+
+    if (fileURI) {
+      console.log("we got a file")
+     await handleCloudImageUpload(fileURI);
+    }
+  };
+
+  const onStart = () => {
+    console.log("started with blob")
+    setIsUploading(true);
+  };
+
+  const onProgress = (progress) => {
+    setProgress(progress);
+  };
+  const onComplete = (fileUrl) => {
+    // setImgURL(fileUrl);
+    // console.log('IMG URL = = = ', fileUrl);
+    setNewItemImage(fileUrl);
+    console.log('NewItemImg value = ' , newItemImage);
+    setIsUploading(false);
+    console.log("completed with blob")
+  };
+
+  const onFail = (error) => {
+    setError(error);
+    setIsUploading(false);
+  };
+  const handleCloudImageUpload = async (imgURI) => {
+    if (!imgURI) return;
+    console.log("did we run?")
+    let fileToUpload = null;
+
+    const blob = await getBlobFromUri(imgURI);
+
+    await manageFileUpload(blob, { onStart, onProgress, onComplete, onFail });
+  };
 
 
-  const value = {
+  const value = { 
+    isValidEmail, isValidPhone, isValidUsername, isValidPassword, isValidNumbers,
     email, setEmail,
     phone, setPhone,
     userName, setUserName,
@@ -567,7 +852,7 @@ export default function ContextProvider(props) {
     LoadUsers,
     LoadFoodTypes,
     LoadRestaurants,
-    users,
+    users, expoPushToken, setExpoPushToken,
     userData, setUserData, fetchUserData,
     checkEmail, checkUsername,
     checkLoginUser, checkLoginRestaurant,
@@ -580,7 +865,7 @@ export default function ContextProvider(props) {
     foodTypes,
     dinersList,
     restaurants,setRestaurants,
-    findRestaurants,
+    findRestaurants, nearbyRestaurants,
     isLoading,setIsLoading,
     updateSeats, AddReservationRequest,
     filteredRestaurants, setFilteredRestaurants,
@@ -606,6 +891,11 @@ export default function ContextProvider(props) {
     addItem, deleteItem, editItem,
     restaurantOrders, setRestaurantOrders, LoadRestaurantOrders,
     deleteOrder, updateSeatsBack, changeApprovedOrder,
+    restaurantReviews, setRestaurantReviews, LoadRestaurantReviews,
+    addReview, rating, setRating, description, setDescription,
+    loadingReviews, setLoadingReviews, deleteReview, editReview,
+    googleMapsApiKey, GetGoogleApi, handleLocalImageUpload, GetFirebaseConfig,
+    imgSrc, setImgSrc,
   };
 
   return (

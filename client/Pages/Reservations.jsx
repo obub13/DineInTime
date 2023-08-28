@@ -13,8 +13,8 @@ export default function Reservations({ restaurant }) {
 
     useEffect(() => {
         if (restaurant) {
+          LoadRestaurantOrders(restaurant._id);
             if (restaurant.orders) {
-              LoadRestaurantOrders(restaurant._id);
               fetchUserDataForOrders();
             } else {
                 setLoadingUserData(false); // Set loading state to false when orders is null

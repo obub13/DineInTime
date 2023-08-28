@@ -98,6 +98,10 @@ class Restaurant {
     static async EditMenu(id, itemId, name, price, image, category) {
         return await new DB().EditMenuItem(Restaurant.collection, id, itemId, name, price, image, category);
     }
+
+    static async Upload(id, imageUrl) {
+        return await new DB().Upload(Restaurant.collection, id, image);
+    }
 }
 
 

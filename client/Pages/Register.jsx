@@ -1,5 +1,5 @@
 import { View, Text, ScrollView, Image, TouchableOpacity, StyleSheet, Dimensions, TouchableWithoutFeedback } from 'react-native';
-import React, { useContext, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import { Camera, CameraType } from 'expo-camera';
 import * as ImagePicker from 'expo-image-picker';
 import { MaterialIcons } from '@expo/vector-icons';
@@ -11,16 +11,32 @@ const windowHeight = Dimensions.get('window').height;
 
 export default function Register(props) {
 
-    const { email, setEmail, phone, setPhone, userName, setUserName, password, setPassword, confirm, setConfirm, addUser, checkEmail, checkUsername } = useContext(ContextPage);
+    const { isValidEmail, isValidPhone, isValidUsername, isValidPassword, email, setEmail, phone, setPhone, imgSrc, setImgSrc,
+      userName, setUserName, password, setPassword, confirm, setConfirm, addUser, checkEmail, checkUsername, checkEmailBusiness,  handleLocalImageUpload, GetFirebaseConfig } = useContext(ContextPage);
     
       const [camera, setCamera] = useState();
       const [type, setType] = useState(CameraType.back);
-      const [imgSrc, setImgSrc] = useState('');
       const [permission, requestPermission] = Camera.useCameraPermissions();
       const [showCamera, setShowCamera] = useState(false);
       const [isPasswordVisible, setIsPasswordVisible] = useState(false);
       const [isVerifyVisible, setIsVerifyVisible] = useState(false);
       const [pressed, setPressed] = useState(false);
+      const [emailHelper, setEmailHelper] = useState(false);
+      const [isEmailOccupied, setIsEmailOccupied] = useState(false);
+      const [isUsernameOccupied, setIsUsernameOccupied] = useState(false);
+      const [phoneHelper, setPhoneHelper] = useState(false);
+      const [usernameHelper, setUsernameHelper] = useState(false);
+      const [passwordHelper, setPasswordHelper] = useState(false);
+      const [confirmHelper, setConfirmHelper] = useState(false);
+
+      const [isLengthValid, setIsLengthValid] = useState(true);
+      const [hasUppercase, setHasUppercase] = useState(true);
+      const [hasLowercase, setHasLowercase] = useState(true);
+      const [hasDigit, setHasDigit] = useState(true);
+
+      useEffect(() => {
+        GetFirebaseConfig();
+      }, []);
 
       const handlePressIn = () => {
         setPressed(true);
@@ -65,6 +81,7 @@ export default function Register(props) {
       setImgSrc(photo.uri);
       console.log(imgSrc);
       setShowCamera(false);
+      handleLocalImageUpload();
     }
 
     const pickImage = async () => {
@@ -76,10 +93,80 @@ export default function Register(props) {
     });
       if (!result.canceled) {
         setImgSrc(result.assets[0].uri);
+        //uploadImage(result.assets[0].uri);
     }
   };
 
+
+  const checkInputsValidation = async() => {
+
+    let emailOccupied = await checkEmail(email);
+    let usernameOccupied = await checkUsername(userName);
+  
+    if (emailOccupied) {
+      setIsEmailOccupied(true);
+      setEmail('');
+    } else {
+      setIsEmailOccupied(false);
+    }
+  
+    if (usernameOccupied) {
+      setIsUsernameOccupied(true);
+      setUserName('');
+    } else {
+      setIsUsernameOccupied(false);
+    }
+  
+    if (!isValidEmail(email)) {
+      setEmailHelper(true);
+      setEmail('');
+    } else {
+      setEmailHelper(false);
+    }
+  
+    if (!isValidPhone(phone)) {
+      setPhoneHelper(true);
+      setPhone('');
+    } else {
+      setPhoneHelper(false);
+    }
+  
+    if (!isValidUsername(userName)) {
+      setUsernameHelper(true);
+      setUserName('');
+    } else {
+      setUsernameHelper(false);
+    }
+
+    if (!isValidPassword(password)) {
+      if (password !== undefined) {
+        setIsLengthValid(password.length >= 6);
+      } else {
+        setIsLengthValid(false);
+      }
+      setHasUppercase(/[A-Z]/.test(password));
+      setHasLowercase(/[a-z]/.test(password));
+      setHasDigit(/[0-9]/.test(password));
+      setPasswordHelper(true);
+      setPassword('');
+      setConfirm('');
+    } else {
+      setPasswordHelper(false);
+    }
+
+    if (password !== confirm) {
+      setConfirmHelper(true);
+      setConfirm('');
+    } else {
+      setConfirmHelper(false);
+    }
+
+  }
+
     const handleRegister = async() => {
+
+      await checkInputsValidation();
+
       const user = {
           email: email,
           phone: phone,
@@ -89,33 +176,13 @@ export default function Register(props) {
           verify: confirm,
       };
 
-      let isEmailOccupied = await checkEmail(email);
-      let isUsernameOccupied = await checkUsername(userName);
 
-      if (email && phone && userName && imgSrc && password && confirm) {
+      if (email && phone && userName && imgSrc && password && confirm && !isEmailOccupied && !isUsernameOccupied && 
+        !emailHelper && !phoneHelper && !usernameHelper && !passwordHelper && !confirmHelper) {
         
-        if (isEmailOccupied) {
-          alert(`Email is already in use. \nPlease choose a different email.`);
-          isEmailOccupied = false;
-        } else if (isUsernameOccupied) {
-          alert(`Username is already occupied. \nPlease choose a different username`);
-          isUsernameOccupied = false;
-        }
-        else {
-          if (password === confirm) {  
-            addUser(user);
-            props.navigation.navigate("Login");
-          } else { 
-            alert(`Password and verify do not match. \nPlease re-enter your password.`);
-          }
-        }
-
-      } else {
-        alert('Invalid Error')
+          addUser(user);
+          props.navigation.navigate("Login");
       }
-
-       isEmailOccupied = await checkEmail(email);
-       isUsernameOccupied = await checkUsername(userName);  
     };
 
   return (
@@ -148,6 +215,10 @@ export default function Register(props) {
               onChangeText={setEmail}
               value={email}
             />
+            <HelperText style={styles.helperText} type="error" visible={emailHelper || isEmailOccupied}>
+              {emailHelper && 'Invalid email address'}
+              {isEmailOccupied && 'Email is already registered'}
+            </HelperText>
             <TextInput
               style={styles.outlinedInput}
               mode="outlined"  
@@ -156,6 +227,9 @@ export default function Register(props) {
               onChangeText={setPhone}
               value={phone}
             />
+            <HelperText style={styles.helperText} type="error" visible={phoneHelper}>
+              Invalid phone number
+            </HelperText>
             <TextInput
               style={styles.outlinedInput}
               mode="outlined"  
@@ -163,11 +237,18 @@ export default function Register(props) {
               onChangeText={setUserName}
               value={userName}
             />
+            <HelperText style={styles.helperText} type="error" visible={usernameHelper || isUsernameOccupied}>
+              {usernameHelper && 'Invalid username'}
+              {isUsernameOccupied && 'Username is already occupied'}
+            </HelperText>
             <View style={{flexDirection:'row', justifyContent:'center'}}>
               <TouchableOpacity onPress={handleAddImage}><MaterialIcons style={styles.imgBtn} name="add-a-photo" /></TouchableOpacity>
-              <TouchableOpacity onPress={pickImage}><MaterialIcons style={styles.imgBtn} name="add-photo-alternate" /></TouchableOpacity>
+              <TouchableOpacity onPress={handleLocalImageUpload}><MaterialIcons style={styles.imgBtn} name="add-photo-alternate" /></TouchableOpacity>
+              {imgSrc && <Image source={{ uri: imgSrc }} style={{ margin: 10, padding: 5, width: 65, height: 65, alignSelf:'center' }} />}
             </View>
-            {imgSrc && <Image source={{ uri: imgSrc }} style={{ width: 100, height: 100, alignSelf:'center' }} />}
+              <HelperText style={styles.helperText} type="error" visible={imgSrc ? false : true}>
+                Select image
+              </HelperText>
             <TextInput style={styles.outlinedInput}   
               mode="outlined"        
               label="Password"
@@ -176,6 +257,13 @@ export default function Register(props) {
               value={password}
               right={<TextInput.Icon icon={isPasswordVisible ? 'eye-off' : 'eye'} onPress={() => setIsPasswordVisible(!isPasswordVisible)}/>}
             />
+            <HelperText style={styles.helperText} type="error" visible={passwordHelper}>
+              Password must have
+              {!isLengthValid && '\n*At least 6 characters'}
+              {!hasUppercase && '\n*At least 1 uppercase letter'}
+              {!hasLowercase && '\n*At least 1 lowercase letter'}
+              {!hasDigit && '\n*At least 1 digit'}
+            </HelperText>
             <TextInput style={styles.outlinedInput} 
               mode="outlined"
               label="Verify"
@@ -183,8 +271,10 @@ export default function Register(props) {
               onChangeText={setConfirm}
               value={confirm} 
               right={<TextInput.Icon icon={isVerifyVisible ? 'eye-off' : 'eye'} onPress={() => setIsVerifyVisible(!isVerifyVisible)}/>}
-
             />
+            <HelperText style={styles.helperText} type="error" visible={confirmHelper}>
+              Password and verify do not match
+            </HelperText>
             <TouchableWithoutFeedback onPressIn={handlePressIn} onPressOut={handlePressOut} onPress={handleRegister}>
               <Button style={styles.btn} mode={pressed ? 'outlined' : 'contained'}><Text style={{fontFamily: 'eb-garamond', fontSize: 18}}>Sign Up</Text></Button>
             </TouchableWithoutFeedback>
@@ -231,9 +321,14 @@ const styles = StyleSheet.create({
       justifyContent: "center",
     },
     outlinedInput: {
-      margin: 5,
+      marginBottom: 0, 
       width: "75%",
       alignSelf: 'center',
+    },
+    helperText: {
+      marginTop: -5,
+      width: "80%",
+      alignSelf: 'center',        
     },
     input: {
       height: 50,
@@ -256,7 +351,7 @@ const styles = StyleSheet.create({
     imgBtn: {
       fontSize: 50,
       alignSelf: "center",
-      borderColor: "#B0B0B0",
+      borderColor: "#90b2ac",
       borderWidth: 1,
       margin: 10,
       padding: 5,
