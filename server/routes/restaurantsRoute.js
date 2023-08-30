@@ -74,6 +74,17 @@ restaurantsRoute.post('/add', async (req, res) => {
     }
 });
 
+restaurantsRoute.put('/edit/:id', async (req, res) => {
+    try {
+        let { id } = req.params;
+        let { image, availableSeats, inside, outside, bar, password, verify } = req.body;
+        let data = await Restaurant.EditRestaurant(id, image, availableSeats, inside, outside, bar, password, verify);
+        res.status(201).json(data);
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+});
+
 restaurantsRoute.post('/find', async (req, res) => {
     try {
         let { location, foodType, diners } = req.body;
@@ -90,7 +101,7 @@ restaurantsRoute.post('/near', async (req, res) => {
         let data = await Restaurant.FindRestaurants(foodType, diners);
         res.status(201).json(data);
     } catch (error) {
-        res.status(500).json({ error });
+        res.status(500).json({ error:error.message });
     }
 });
 

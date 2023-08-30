@@ -30,13 +30,12 @@ export default function Home(props) {
         setErrorMsg("Permission to access location was denied");
         return;
       }
-      
-      let location = await Location.getCurrentPositionAsync({});
-      
+      let loc = await Location.getCurrentPositionAsync({});
+      setUserLocation(loc.coords)
+      // console.log('location', loc);
       //let heading = await Location.getHeadingAsync({});
-      setUserLocation(location.coords);
-      let reverse = await Location.reverseGeocodeAsync(location.coords, { language: 'en' });
-      // console.log(reverse);
+      let reverse = await Location.reverseGeocodeAsync(loc.coords, { language: 'en' });
+      console.log('reverse',reverse);
       await locationToCity(reverse);
       
       } catch (error) {
@@ -50,7 +49,6 @@ export default function Home(props) {
     if (reverse && reverse[0].city) {
       
       let cityName = reverse[0].city;
-      
       l = cities.find((c)=>cityName===c.english_name)?.english_name  //?.=setting l to the english name of the city
       if (l === undefined) {
         l = cities.find((c) => c.name === cityName)?.english_name;
@@ -151,26 +149,73 @@ export default function Home(props) {
     await locationToCity(reverse);
   }
 
+
+  // const saveLocation = async () => {
+  //   if (newLocation) {
+  //     let reverse = await Location.reverseGeocodeAsync(newLocation);
+  //     await locationToCity(reverse);
+  
+  //     // Set the user's new location
+  //     setUserLocation(newLocation);
+  //   } 
+  //   setIsLocationLoad(false);
+  // }
+
+  // const resetLocation = async () => {
+  //   setUserLocation(loc.coords); // Set the user's location
+  //   setNewLocation(null); // Clear the new location
+  //   let reverse = await Location.reverseGeocodeAsync(loc.coords, { language: 'en' });
+  //   await locationToCity(reverse);
+  // }
+
+  // const findNearbyRestaurants = async () => {
+  //   const nearbyRestaurants = await Promise.all(
+  //     filteredRestaurants.map(async (restaurant) => {
+  //       if (restaurant.location) {
+  //         console.log('rest locatio in findnerabyfunc',restaurant.location);     
+  //         const reverse = await Location.reverseGeocodeAsync(restaurant.location);  //BUG ERROR LOCATION PARAM MUST BE ALTITUDE/LONGITUDE
+  //         const distance = calculateDistance(
+  //           newLocation ? newLocation.latitude : userLocation.latitude,
+  //           newLocation ? newLocation.longitude : userLocation.longitude,
+  //           reverse[0].latitude,
+  //           reverse[0].longitude
+  //         );
+  //         return distance <= chosenRange ? restaurant : null;
+  //       }
+  //     })
+  //   );
+  //    // Filter out null values (restaurants that are not within the chosen range)
+  //    if (nearbyRestaurants) {
+  //      const validNearbyRestaurants = nearbyRestaurants.filter((restaurant) => restaurant !== null);
+  //      setFilteredRestaurants(validNearbyRestaurants);
+  //    }
+  // }
+
   const findNearbyRestaurants = async () => {
-    const nearbyRestaurants = await Promise.all(
+    const validNearbyRestaurants = await Promise.all(
       filteredRestaurants.map(async (restaurant) => {
         if (restaurant.location) {
-          const reverse = await Location.reverseGeocodeAsync(restaurant.location);
+          console.log('rest location in findNearbyRestaurants', restaurant.location);
+  
+          // Assuming Location.reverseGeocodeAsync is a function that takes latitude and longitude as arguments
+          const { latitude, longitude } = restaurant.location;
+          const reverse = await Location.reverseGeocodeAsync({ latitude, longitude });
+          
           const distance = calculateDistance(
             newLocation ? newLocation.latitude : userLocation.latitude,
             newLocation ? newLocation.longitude : userLocation.longitude,
-            reverse[0].latitude,
-            reverse[0].longitude
+            latitude,
+            longitude
           );
+          
           return distance <= chosenRange ? restaurant : null;
         }
       })
     );
-     // Filter out null values (restaurants that are not within the chosen range)
-     if (nearbyRestaurants) {
-       const validNearbyRestaurants = nearbyRestaurants.filter((restaurant) => restaurant !== null);
-       setFilteredRestaurants(validNearbyRestaurants);
-     }
+  
+    // Filter out null values (restaurants that are not within the chosen range)
+    const filteredRestaurantsWithoutNull = validNearbyRestaurants.filter((restaurant) => restaurant !== null);
+    setFilteredRestaurants(filteredRestaurantsWithoutNull);
   }
 
   const handleFind = () => {
@@ -400,6 +445,7 @@ const styles = StyleSheet.create({
     alignSelf: "center",
     width: "75%",
     borderWidth: 2,
+    borderColor: "#90b2ac",
     margin: 10,
   },
   title: {

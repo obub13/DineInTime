@@ -8,12 +8,10 @@ import { useFonts } from "expo-font";
 
 export default function Login(props) {
   
-  const { expoPushToken, setExpoPushToken, userName, password, setUserName, setPassword, users, LoadUsers, setLoginUser, restaurants, LoadRestaurants, LoadFoodTypes, checkLoginUser, checkLoginRestaurant, } = useContext(ContextPage);
-  
+  const { expoPushToken, setExpoPushToken, userName, password, setUserName, setPassword, setLoginUser, checkLoginUser, checkLoginRestaurant, isRestaurantOwner, setIsRestaurantOwner } = useContext(ContextPage);
   
   const [isPasswordVisible, setIsPasswordVisible] = useState(false);
   const [pressed, setPressed] = useState(false);
-  const [isRestaurantOwner, setIsRestaurantOwner] = useState(false);
   const [submit, setSubmit] = useState(false);
   const [bothHelper, setBothHelper] = useState(false);
   const [foundHelper, setFoundHelper] = useState(false);
@@ -63,13 +61,13 @@ if (!loaded) {
         // setLoginUser(user);
         if (user) {
            // Successfully logged in, now get the Expo push token and send a notification
-           console.log('user found ');
+          //  console.log('user found ');
           const token = await registerForPushNotificationsAsync();
-          console.log(token, ' after registratingforpushnotificationasync function');
+          // console.log(token, ' after registratingforpushnotificationasync function');
           // setExpoPushToken(token);
-          console.log('setting token for pushnotfication');
+          // console.log('setting token for pushnotfication');
           await sendPushNotification('Login Successful', 'Welcome to the app!', token);
-          console.log('sendpushnotification');
+          // console.log('sendpushnotification');
           if (userName === "Admin1" || userName === "Admin2") {
             setLoginUser(user);
             setExpoPushToken(token);
@@ -85,6 +83,7 @@ if (!loaded) {
         }
       } else {
         const restaurant = await checkLoginRestaurant(userName, password);
+        setLoginUser(restaurant);
         if (restaurant) {
           if (restaurant.approved) {
             const token = await registerForPushNotificationsAsync();
