@@ -42,7 +42,6 @@ export default function RestaurantDetails({ route, navigation }) {
     if (restaurant) {
       setMenuItems(restaurant.menu);
       fetchRestaurantData();
-      GetFirebaseConfig();
     }
   }, [restaurant]);
 

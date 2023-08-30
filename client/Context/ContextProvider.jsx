@@ -169,11 +169,11 @@ export default function ContextProvider(props) {
     try {
       let res = await fetch(`${apiUrl}/api/firebase-config`);
       let data = await res.json();
-      // firebase.initializeApp(data.firebaseConfig);
+      firebase.initializeApp(data.firebaseConfig);
       setFirebaseConfig(data.firebaseConfig);
-      if (firebaseConfig) {
-        firebase.initializeApp(firebaseConfig);
-      }
+      // if (firebaseConfig) {
+      //   firebase.initializeApp(firebaseConfig);
+      // }
     } catch (error) {
       console.log({ error });
     }
