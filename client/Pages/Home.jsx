@@ -149,24 +149,40 @@ export default function Home(props) {
     await locationToCity(reverse);
   }
 
-
-  // const saveLocation = async () => {
-  //   if (newLocation) {
-  //     let reverse = await Location.reverseGeocodeAsync(newLocation);
-  //     await locationToCity(reverse);
+  const findNearbyRestaurants = async () => {
+    const nearbyRestaurants = await Promise.all(
+      filteredRestaurants.map(async (restaurant) => {
+        if (restaurant.location) {
+          try {
+            const geocode = await Location.geocodeAsync(restaurant.location);
+            if (geocode.length > 0) {
+              const { latitude, longitude } = geocode[0];
+              const distance = calculateDistance(
+                userLocation.latitude,
+                userLocation.longitude,
+                latitude,
+                longitude
+              );
+              return distance <= chosenRange ? restaurant : null;
+            }
+          } catch (error) {
+            console.log(error.message); // Handle error gracefully
+          }
+        }
+      })
+    );
+    
+    // Filter out null values (restaurants that are not within the chosen range)
+    if (nearbyRestaurants) {
+      const validNearbyRestaurants = nearbyRestaurants.filter((restaurant) => restaurant !== null);
+      if (validNearbyRestaurants) {
+        setFilteredRestaurants(validNearbyRestaurants);
+      }
+    }
+  }
   
-  //     // Set the user's new location
-  //     setUserLocation(newLocation);
-  //   } 
-  //   setIsLocationLoad(false);
-  // }
 
-  // const resetLocation = async () => {
-  //   setUserLocation(loc.coords); // Set the user's location
-  //   setNewLocation(null); // Clear the new location
-  //   let reverse = await Location.reverseGeocodeAsync(loc.coords, { language: 'en' });
-  //   await locationToCity(reverse);
-  // }
+
 
   // const findNearbyRestaurants = async () => {
   //   const nearbyRestaurants = await Promise.all(
@@ -191,32 +207,32 @@ export default function Home(props) {
   //    }
   // }
 
-  const findNearbyRestaurants = async () => {
-    const validNearbyRestaurants = await Promise.all(
-      filteredRestaurants.map(async (restaurant) => {
-        if (restaurant.location) {
-          console.log('rest location in findNearbyRestaurants', restaurant.location);
+  // const findNearbyRestaurants = async () => {
+  //   const validNearbyRestaurants = await Promise.all(
+  //     filteredRestaurants.map(async (restaurant) => {
+  //       if (restaurant.location) {
+  //         console.log('rest location in findNearbyRestaurants', restaurant.location);
   
-          // Assuming Location.reverseGeocodeAsync is a function that takes latitude and longitude as arguments
-          const { latitude, longitude } = restaurant.location;
-          const reverse = await Location.reverseGeocodeAsync({ latitude, longitude });
+  //         // Assuming Location.reverseGeocodeAsync is a function that takes latitude and longitude as arguments
+  //         const { latitude, longitude } = restaurant.location;
+  //         const reverse = await Location.reverseGeocodeAsync({ latitude, longitude });
           
-          const distance = calculateDistance(
-            newLocation ? newLocation.latitude : userLocation.latitude,
-            newLocation ? newLocation.longitude : userLocation.longitude,
-            latitude,
-            longitude
-          );
+  //         const distance = calculateDistance(
+  //           newLocation ? newLocation.latitude : userLocation.latitude,
+  //           newLocation ? newLocation.longitude : userLocation.longitude,
+  //           latitude,
+  //           longitude
+  //         );
           
-          return distance <= chosenRange ? restaurant : null;
-        }
-      })
-    );
+  //         return distance <= chosenRange ? restaurant : null;
+  //       }
+  //     })
+  //   );
   
-    // Filter out null values (restaurants that are not within the chosen range)
-    const filteredRestaurantsWithoutNull = validNearbyRestaurants.filter((restaurant) => restaurant !== null);
-    setFilteredRestaurants(filteredRestaurantsWithoutNull);
-  }
+  //   // Filter out null values (restaurants that are not within the chosen range)
+  //   const filteredRestaurantsWithoutNull = validNearbyRestaurants.filter((restaurant) => restaurant !== null);
+  //   setFilteredRestaurants(filteredRestaurantsWithoutNull);
+  // }
 
   const handleFind = () => {
     console.log(location, foodType, diners);

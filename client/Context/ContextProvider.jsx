@@ -948,6 +948,7 @@ export default function ContextProvider(props) {
     loadingReviews, setLoadingReviews, deleteReview, editReview,
     googleMapsApiKey, GetGoogleApi, handleLocalImageUpload, GetFirebaseConfig,
     imgSrc, setImgSrc, isRestaurantOwner, setIsRestaurantOwner, editRestaurant,
+    isUploading, setIsUploading,
   };
 
   return (

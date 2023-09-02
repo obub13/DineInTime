@@ -27,6 +27,7 @@
     "axios": "^1.4.0",
     "chart.js": "^4.3.0",
     "chartjs-plugin-datalabels": "^2.2.0",
+    "date-fns": "^2.30.0",
     "expo": "~48.0.15",
     "expo-camera": "~13.2.1",
     "expo-device": "~5.2.1",

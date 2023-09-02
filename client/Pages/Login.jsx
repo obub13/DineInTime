@@ -44,6 +44,67 @@ if (!loaded) {
   }
 
 
+  // const handleLogin = async() => {
+
+  //   await checkInputsValidation();
+  //   setFoundHelper(false);
+  //   setApprovalHelper(false);
+
+  //   if (bothHelper) {
+  //     return;
+  //   }
+
+  //   // Call the appropriate login function based on user type
+  //   try {
+  //     if (!isRestaurantOwner) {
+  //       const user = await checkLoginUser(userName, password);
+  //       // setLoginUser(user);
+  //       if (user) {
+  //          // Successfully logged in, now get the Expo push token and send a notification
+  //         //  console.log('user found ');
+  //         const token = await registerForPushNotificationsAsync();
+          
+  //         // console.log(token, ' after registratingforpushnotificationasync function');
+  //         // setExpoPushToken(token);
+  //         // console.log('setting token for pushnotfication');
+  //         await sendPushNotification('Login Successful', 'Welcome to the app!', token);
+  //         // console.log('sendpushnotification');
+  //         if (userName === "Admin1" || userName === "Admin2") {
+  //           setLoginUser(user);
+  //           setExpoPushToken(token);
+  //           props.navigation.navigate("Admin");
+  //         } else {
+  //           setLoginUser(user);
+  //           setExpoPushToken(token);
+  //           props.navigation.navigate("Main");
+  //         }
+  //       } else {
+  //         //alert('Invalid Error');
+  //         setFoundHelper(true);
+  //       }
+  //     } else {
+  //       const restaurant = await checkLoginRestaurant(userName, password);
+  //       setLoginUser(restaurant);
+  //       if (restaurant) {
+  //         if (restaurant.approved) {
+  //           const token = await registerForPushNotificationsAsync();
+  //           await sendPushNotification('Login Successful', 'Welcome to the app!', token);
+  //           setExpoPushToken(token);
+  //           props.navigation.navigate('RestaurantDetails', { userType: 'restaurantOwner', restaurant: restaurant  });
+  //         } else {
+  //           //alert("Your restaurant hasn't been approved yet. Please wait for approval.");
+  //           setApprovalHelper(true);
+  //         }
+  //       } else {
+  //         setFoundHelper(true);
+  //       }
+  //     }
+      
+  //   } catch (error) {
+  //     //alert('Invalid Error');
+  //     setFoundHelper(true);
+  //   }
+  // };
   const handleLogin = async() => {
 
     await checkInputsValidation();
@@ -58,24 +119,16 @@ if (!loaded) {
     try {
       if (!isRestaurantOwner) {
         const user = await checkLoginUser(userName, password);
-        // setLoginUser(user);
+        setLoginUser(user);
         if (user) {
            // Successfully logged in, now get the Expo push token and send a notification
-          //  console.log('user found ');
           const token = await registerForPushNotificationsAsync();
-          // console.log(token, ' after registratingforpushnotificationasync function');
-          // setExpoPushToken(token);
-          // console.log('setting token for pushnotfication');
+          setExpoPushToken(token);
           await sendPushNotification('Login Successful', 'Welcome to the app!', token);
-          // console.log('sendpushnotification');
-          if (userName === "Admin1" || userName === "Admin2") {
-            setLoginUser(user);
-            setExpoPushToken(token);
+          if (userName === "Admin1" || userName === "Admin2" || userName === "shaked1299@gmail.com" || userName === "ofekbub@gmail.com") {
             props.navigation.navigate("Admin");
           } else {
-            setLoginUser(user);
-            setExpoPushToken(token);
-            props.navigation.navigate("Main");
+            props.navigation.navigate("Home");
           }
         } else {
           //alert('Invalid Error');
@@ -87,9 +140,9 @@ if (!loaded) {
         if (restaurant) {
           if (restaurant.approved) {
             const token = await registerForPushNotificationsAsync();
-            await sendPushNotification('Login Successful', 'Welcome to the app!', token);
             setExpoPushToken(token);
-            props.navigation.navigate('RestaurantDetails', { userType: 'restaurantOwner', restaurant: restaurant  });
+            await sendPushNotification('Login Successful', 'Welcome to the app!', token);
+            props.navigation.navigate('RestaurantDetails', { userType: 'restaurantOwner', restaurant: restaurant });
           } else {
             //alert("Your restaurant hasn't been approved yet. Please wait for approval.");
             setApprovalHelper(true);
