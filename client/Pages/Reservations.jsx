@@ -1,4 +1,4 @@
-import { View, Text, ScrollView, StyleSheet, Image, TouchableOpacity, FlatList, Alert } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, FlatList, Alert } from 'react-native';
 import React, { useContext, useState, useEffect } from 'react';
 import { ContextPage } from '../Context/ContextProvider';
 import { MaterialIcons } from '@expo/vector-icons';

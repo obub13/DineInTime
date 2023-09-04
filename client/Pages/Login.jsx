@@ -1,10 +1,10 @@
 import { View, Text, StyleSheet, Image, TouchableOpacity, ScrollView, TouchableWithoutFeedback } from "react-native";
-import React, { useContext, useEffect, useState } from "react";
+import React, { useContext, useState } from "react";
 import { ContextPage } from "../Context/ContextProvider";
 import { sendPushNotification, registerForPushNotificationsAsync } from "./PushNotification";
 import { Button, TextInput, HelperText, Checkbox } from 'react-native-paper';
 import { useFonts } from "expo-font";
-
+import * as Localization from 'expo-localization';  //imports for device language func
 
 export default function Login(props) {
   
@@ -25,7 +25,16 @@ const [loaded] = useFonts({
 if (!loaded) {
   return;
 }
-
+//function to get device language
+// const GetDeviceLanguage= () => {
+//       // Get the device's current locale
+//       const currentLocale = Localization.locale;
+    
+//       // Extract the language from the locale (e.g., 'en-US' -> 'en')
+//       const deviceLanguage = currentLocale.split('-')[0];
+//       console.log('device langauge', deviceLanguage);
+//       return deviceLanguage;
+// }
   
   const handlePressIn = () => {
     setPressed(true);
@@ -44,69 +53,8 @@ if (!loaded) {
   }
 
 
-  // const handleLogin = async() => {
-
-  //   await checkInputsValidation();
-  //   setFoundHelper(false);
-  //   setApprovalHelper(false);
-
-  //   if (bothHelper) {
-  //     return;
-  //   }
-
-  //   // Call the appropriate login function based on user type
-  //   try {
-  //     if (!isRestaurantOwner) {
-  //       const user = await checkLoginUser(userName, password);
-  //       // setLoginUser(user);
-  //       if (user) {
-  //          // Successfully logged in, now get the Expo push token and send a notification
-  //         //  console.log('user found ');
-  //         const token = await registerForPushNotificationsAsync();
-          
-  //         // console.log(token, ' after registratingforpushnotificationasync function');
-  //         // setExpoPushToken(token);
-  //         // console.log('setting token for pushnotfication');
-  //         await sendPushNotification('Login Successful', 'Welcome to the app!', token);
-  //         // console.log('sendpushnotification');
-  //         if (userName === "Admin1" || userName === "Admin2") {
-  //           setLoginUser(user);
-  //           setExpoPushToken(token);
-  //           props.navigation.navigate("Admin");
-  //         } else {
-  //           setLoginUser(user);
-  //           setExpoPushToken(token);
-  //           props.navigation.navigate("Main");
-  //         }
-  //       } else {
-  //         //alert('Invalid Error');
-  //         setFoundHelper(true);
-  //       }
-  //     } else {
-  //       const restaurant = await checkLoginRestaurant(userName, password);
-  //       setLoginUser(restaurant);
-  //       if (restaurant) {
-  //         if (restaurant.approved) {
-  //           const token = await registerForPushNotificationsAsync();
-  //           await sendPushNotification('Login Successful', 'Welcome to the app!', token);
-  //           setExpoPushToken(token);
-  //           props.navigation.navigate('RestaurantDetails', { userType: 'restaurantOwner', restaurant: restaurant  });
-  //         } else {
-  //           //alert("Your restaurant hasn't been approved yet. Please wait for approval.");
-  //           setApprovalHelper(true);
-  //         }
-  //       } else {
-  //         setFoundHelper(true);
-  //       }
-  //     }
-      
-  //   } catch (error) {
-  //     //alert('Invalid Error');
-  //     setFoundHelper(true);
-  //   }
-  // };
   const handleLogin = async() => {
-
+    // GetDeviceLanguage();
     await checkInputsValidation();
     setFoundHelper(false);
     setApprovalHelper(false);

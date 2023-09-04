@@ -93,17 +93,10 @@ export default function Register(props) {
   
 
     const onPictureSaved = async (photo) => {
-      // setImgSrc(photo.uri);
       await handleLocalImageUpload(photo.uri);
       setShowCamera(false);
     }
 
-    // const onPictureSaved = photo => {
-    //   setImgSrc(photo.uri);
-    //   console.log(imgSrc);
-    //   setShowCamera(false);
-    //   handleLocalImageUpload();
-    // }
 
     const pickImage = async () => {
       let result = await ImagePicker.launchImageLibraryAsync({
@@ -113,9 +106,7 @@ export default function Register(props) {
         quality: 1,
     });
       if (!result.canceled) {
-        // setImgSrc(result.assets[0].uri);
         await handleLocalImageUpload(result.assets[0].uri);
-        //uploadImage(result.assets[0].uri);
     }
   };
 
@@ -321,7 +312,6 @@ export default function Register(props) {
 const styles = StyleSheet.create({
     container: {
       justifyContent: "center",
-      // backgroundColor: "#94B285",
       paddingTop: 100,
       width: "100%",
       height: "100%",

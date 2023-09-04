@@ -1,7 +1,6 @@
-import { View, Text, Button, Modal, ScrollView, Image, StyleSheet, TouchableOpacity, FlatList, ActivityIndicator } from 'react-native';
+import { View, Text, ScrollView, Image, StyleSheet, TouchableOpacity, FlatList, ActivityIndicator } from 'react-native';
 import React, { useContext, useEffect, useState } from 'react';
 import { ContextPage } from '../Context/ContextProvider';
-import Charts from './Charts';
 
 export default function Page1(props) {
 

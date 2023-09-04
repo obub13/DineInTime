@@ -1,16 +1,7 @@
 import React, { useContext, useEffect, useState } from "react";
-import {
-  View,
-  Text,
-  Modal,
-  TouchableOpacity,
-  ActivityIndicator,
-  ScrollView,
-  FlatList,
-} from "react-native";
+import { View, Text, Modal, TouchableOpacity, ActivityIndicator, ScrollView, FlatList,} from "react-native";
 import { ContextPage } from "../Context/ContextProvider";
 import WebView from "react-native-webview";
-import { subMonths, format } from "date-fns";
 
 //Function to generate background colors
 const generateBackgroundColors = (count) => {

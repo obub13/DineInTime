@@ -54,6 +54,7 @@ export default function BusinessRegistration(props) {
     };  
 
     const cities = require('../utils/cities.json');
+    // const cities = require('../utils/cities1.json')
 
     const handleSearch = (query) => {
       setSearchQuery(query);

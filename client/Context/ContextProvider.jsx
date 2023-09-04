@@ -417,15 +417,12 @@ export default function ContextProvider(props) {
       
             try {
               data = await JSON.parse(text);
+              console.log(data);
+              setFilteredRestaurants(data);
+              setIsLoading(false);
             } catch (error) {
               throw new Error('Invalid JSON response');
             }
-            console.log(data);
-            if (data) {
-              setFilteredRestaurants(data);
-              setIsLoading(false);
-            }
-            
             return data;
           } else {
             throw new Error(`Request failed ${res.status}`);
@@ -451,17 +448,14 @@ export default function ContextProvider(props) {
             let data;
       
             try {
-              // console.log('data');
               data = await JSON.parse(text);
+              console.log(data);
+              setFilteredRestaurants(data);
+              setIsLoading(false);
             } catch (error) {
               throw new Error('Invalid JSON response');
             }
-            console.log(data);
-            if (data) {
-              setFilteredRestaurants(data);
-              setIsLoading(false);
-            }
-            
+
             return data;
           } else {
             throw new Error(`Request failed ${res.status.message}`);
@@ -769,6 +763,7 @@ export default function ContextProvider(props) {
     return imgURI;
   };
 
+  // fetches and converts image URIs into Blobs for uploading
   const getBlobFromUri = async (uri) => {
     const blob = await new Promise((resolve, reject) => {
       const xhr = new XMLHttpRequest();
@@ -834,22 +829,6 @@ export default function ContextProvider(props) {
     );
   };
 
-  // const handleLocalImageUpload = async () => {
-  //   console.log("handleLocalImageUpload run");
-  //   let fileURI;
-    
-  //   if (!imgSrc) {
-  //     fileURI = await uploadImageFromDevice();
-  //   } else {
-  //     fileURI = await takePictureAndUpload();
-  //   }
-
-  //   if (fileURI) {
-  //     console.log("we got a file")
-  //    await handleCloudImageUpload(fileURI);
-  //   }
-  // };
-
   const handleLocalImageUpload = async (imgSrc) => {
     await GetFirebaseConfig();
     if (imgSrc) {
@@ -857,6 +836,7 @@ export default function ContextProvider(props) {
     }
   };
 
+  // Callbacks (onStart, onProgress, onComplete, onFail) handle various upload stages, from initiation to success and failure
   const onStart = () => {
     setIsUploading(true);
   };
@@ -864,14 +844,6 @@ export default function ContextProvider(props) {
   const onProgress = (progress) => {
     setProgress(progress);
   };
-  // const onComplete = (fileUrl) => {
-  //   // setImgURL(fileUrl);
-  //   // console.log('IMG URL = = = ', fileUrl);
-  //   setNewItemImage(fileUrl);
-  //   console.log('NewItemImg value = ' , newItemImage);
-  //   setIsUploading(false);
-  //   console.log("completed with blob")
-  // };
 
   const onComplete = (fileUrl) => {
     setImgSrc(fileUrl);
@@ -884,7 +856,7 @@ export default function ContextProvider(props) {
   };
   const handleCloudImageUpload = async (imgURI) => {
     if (!imgURI) return;
-    console.log("did we run?")
+    console.log("handle cloud image upload running...")
     let fileToUpload = null;
 
     const blob = await getBlobFromUri(imgURI);
