@@ -120,6 +120,7 @@ export default function Order(props) {
                 </View>
                 <Text style={styles.name}>{item.name}</Text>
                 <Text style={styles.address}>{item.location}</Text>
+                <Text style={styles.text}>Choose your seat</Text>
                 <Text style={styles.seatContainer}>
                   {item.locationSeats.inside > 0 && (
                     <TouchableOpacity  onPress={() => handleSeatReservation(item, 'inside')}>

@@ -139,14 +139,14 @@ class DB {
         }
     }
 
-    async FindRestaurantsByInputs(collection, location, foodType, diners) {
+    async FindRestaurantsByInputs(collection, location, foodType, diners) { 
         try {
             await this.client.connect();
 
             const agg = [
                 {
                   '$match': {
-                    location: location, 
+                    location: { '$regex': new RegExp(location, 'i') },  // 'i' for case-insensitive matching
                     foodType: foodType, 
                     availableSeats: {
                       '$gte': parseInt(diners)

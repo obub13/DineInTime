@@ -159,6 +159,7 @@ export default function ContextProvider(props) {
     try {
       let res = await fetch(`${apiUrl}/api/google-maps-api-key`);
       let data = await res.json();
+      console.log('google api key = ' , data);
       setGoogleMapsApiKey(data.apiKey);
     } catch (error) {
       console.log({ error });
@@ -403,6 +404,7 @@ export default function ContextProvider(props) {
 
 
   const findRestaurants = async (location, foodType, diners) => {
+    console.log('context find restaurants function');
     try {
         let res = await fetch(`${apiUrl}/api/restaurants/find`, {
             method: "POST",
