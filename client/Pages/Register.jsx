@@ -11,7 +11,6 @@ const windowHeight = Dimensions.get('window').height;
 
 export default function Register(props) {
 
-  
     const { isValidEmail, isValidPhone, isValidUsername, isValidPassword, isUploading, email, setEmail, phone, setPhone, imgSrc, setImgSrc,
       userName, setUserName, password, setPassword, confirm, setConfirm, addUser, checkEmail, checkUsername,  handleLocalImageUpload } = useContext(ContextPage);
     
@@ -90,24 +89,22 @@ export default function Register(props) {
         camera.takePictureAsync({ onPictureSaved: onPictureSaved });
       }
     };
-  
-
+    
     const onPictureSaved = async (photo) => {
       await handleLocalImageUpload(photo.uri);
       setShowCamera(false);
     }
 
-
     const pickImage = async () => {
       let result = await ImagePicker.launchImageLibraryAsync({
         mediaTypes: ImagePicker.MediaTypeOptions.Images,
         allowsEditing: true,
-        aspect: [3, 4],
+        aspect: [4, 4],
         quality: 1,
     });
       if (!result.canceled) {
         await handleLocalImageUpload(result.assets[0].uri);
-    }
+      }
   };
 
 

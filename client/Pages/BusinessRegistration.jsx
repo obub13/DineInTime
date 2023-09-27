@@ -1,4 +1,4 @@
-import { View, Text, StyleSheet, Image, ScrollView, TouchableOpacity, Modal, FlatList, TouchableWithoutFeedback, ActivityIndicator } from 'react-native';
+import { View, Text, StyleSheet, Image, ScrollView, TouchableOpacity, Modal, TouchableWithoutFeedback, ActivityIndicator } from 'react-native';
 import React, { useContext, useEffect, useState } from 'react';
 import * as ImagePicker from 'expo-image-picker';
 import { MaterialIcons } from '@expo/vector-icons';
@@ -7,15 +7,13 @@ import { Button, TextInput, HelperText } from 'react-native-paper';
 import { GooglePlacesAutocomplete } from 'react-native-google-places-autocomplete';
 
 export default function BusinessRegistration(props) {
-  const { isValidEmail, isValidPhone, isValidUsername, isValidPassword, isValidNumbers, isUploading, foodTypes, LoadFoodTypes, emailB, setEmailB, phoneB, setPhoneB, nameB, setNameB, address, setAddress, foodTypeB, setFoodTypeB, imgSrc, setImgSrc,
-    passwordB, setPasswordB, confirmB, setConfirmB, availableSeats, setAvailableSeats, inside, setInside, outside, setOutside, bar, setBar, checkEmailBusiness, addRestaurant, googleMapsApiKey, GetGoogleApi, handleLocalImageUpload } = useContext(ContextPage);
+
+    const { isValidEmail, isValidPhone, isValidUsername, isValidPassword, isValidNumbers, isUploading, foodTypes, LoadFoodTypes, emailB, setEmailB, phoneB, setPhoneB, nameB, setNameB, address, setAddress, foodTypeB, setFoodTypeB, imgSrc, setImgSrc,
+        passwordB, setPasswordB, confirmB, setConfirmB, availableSeats, setAvailableSeats, inside, setInside, outside, setOutside, bar, setBar, checkEmailBusiness, addRestaurant, googleMapsApiKey, GetGoogleApi, handleLocalImageUpload } = useContext(ContextPage);
 
     const [isPasswordVisible, setIsPasswordVisible] = useState(false);
     const [foodListVisible, setFoodListVisible] = useState(false);
     const [isVerifyVisible, setIsVerifyVisible] = useState(false);
-    const [isCityListVisible, setIsCityListVisible] = useState(false);
-    const [searchQuery, setSearchQuery] = useState('');
-    const [filteredCities, setFilteredCities] = useState([]);
     const [pressed, setPressed] = useState(false);
     const [emailHelper, setEmailHelper] = useState(false);
     const [isEmailOccupied, setIsEmailOccupied] = useState(false);
@@ -51,37 +49,36 @@ export default function BusinessRegistration(props) {
   
     const handlePressOut = () => {
       setPressed(false);
-    };  
+    }; 
+    // const cities = require('../utils/cities.json');
+    // // const cities = require('../utils/cities1.json')
 
-    const cities = require('../utils/cities.json');
-    // const cities = require('../utils/cities1.json')
-
-    const handleSearch = (query) => {
-      setSearchQuery(query);
+    // const handleSearch = (query) => {
+    //   setSearchQuery(query);
   
-      // Filter the cities based on the search query
-      const filtered = cities.filter((city) =>
-        city.english_name.toLowerCase().startsWith(query.toLowerCase())  ||
-        city.english_name.toLowerCase().includes(query.toLowerCase()) // In case that startsWith not found --> use includes
-      );
+    //   // Filter the cities based on the search query
+    //   const filtered = cities.filter((city) =>
+    //     city.english_name.toLowerCase().startsWith(query.toLowerCase())  ||
+    //     city.english_name.toLowerCase().includes(query.toLowerCase()) // In case that startsWith not found --> use includes
+    //   );
 
-      // Display the top 5 relevant matches
-      const topMatches = filtered.slice(0, 5);
-      setFilteredCities(topMatches);
-    };
+    //   // Display the top 5 relevant matches
+    //   const topMatches = filtered.slice(0, 5);
+    //   setFilteredCities(topMatches);
+    // };
 
 
-    const handleSelectCity = (selectedCity) => {
-      setCity(selectedCity);
-      setSearchQuery(selectedCity);
-      setIsCityListVisible(false);
-    };
+    // const handleSelectCity = (selectedCity) => {
+    //   setCity(selectedCity);
+    //   setSearchQuery(selectedCity);
+    //   setIsCityListVisible(false);
+    // };
   
-    const renderItem = ({ item, index }) => (
-      <TouchableOpacity style={styles.cityItem} onPress={() => handleSelectCity(item.english_name)}>
-        <Text style={styles.cityName}>{item.english_name}</Text>
-      </TouchableOpacity>
-    );  
+    // const renderItem = ({ item, index }) => (
+    //   <TouchableOpacity style={styles.cityItem} onPress={() => handleSelectCity(item.english_name)}>
+    //     <Text style={styles.cityName}>{item.english_name}</Text>
+    //   </TouchableOpacity>
+    // ); 
 
     const resetInputs = async () => {
       setEmailB('');
@@ -107,7 +104,6 @@ export default function BusinessRegistration(props) {
           quality: 1,
       });
         if (!result.canceled) {
-          // setImgB(result.assets[0].uri);
           await handleLocalImageUpload(result.assets[0].uri);
       }
     };
@@ -214,7 +210,6 @@ export default function BusinessRegistration(props) {
             phone: phoneB,
             name: nameB, 
             location: address, 
-            // address: address,
             foodType: foodTypeB, 
             image: imgSrc,
             availableSeats: parseInt(availableSeats), 
@@ -308,7 +303,7 @@ export default function BusinessRegistration(props) {
             </View>
           </Modal>
             </View>
-            
+    
        <GooglePlacesAutocomplete
           placeholder='Address'
           horizontal
@@ -461,7 +456,6 @@ export default function BusinessRegistration(props) {
 const styles = StyleSheet.create({
     container: {
       justifyContent: "center",
-      //backgroundColor: "#94B285",
       paddingTop: 100,
       width: "100%",
       height: "100%",
@@ -523,7 +517,6 @@ const styles = StyleSheet.create({
       padding: 5,
     },
     outlinedInput1: {
-      // margin: 5,
       width: "90%",
       alignSelf: 'center',
       fontSize: 12,
@@ -534,7 +527,6 @@ const styles = StyleSheet.create({
       alignSelf: 'center',        
     },
     outlinedInput2: {
-    // margin: 5,
     width: "45%",
     alignSelf: 'center',
     fontSize: 12,

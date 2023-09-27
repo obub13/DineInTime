@@ -499,6 +499,18 @@
   },
   {
     "country": "IL",
+    "name": "Midreshet Ruppin",
+    "lat": "32.342428",
+    "lng": "34.912594"
+  },
+  {
+    "country": "IL",
+    "name": "Midreshet Ruppin",
+    "lat": "32.3424",
+    "lng": "34.91168"
+  },
+  {
+    "country": "IL",
     "name": "Rosh Pinna",
     "lat": "32.96894",
     "lng": "35.54258"

@@ -61,24 +61,30 @@ export default function Home(props) {
       setLocation(cityName);        
       
     } else {
-      // Handle the case when the city is not available
-      let userLatitude = location.coords.latitude; // User's latitude
-      let userLongitude = location.coords.longitude; // User's longitude
+      let userLatitude;
+      let userLongitude;
+      if(newLocation){
+        // Handle the case when the city is not available
+         userLatitude = newLocation.latitude; // User's latitude
+         userLongitude = newLocation.longitude; // User's longitude
+      } else {
+        userLatitude = userLocation.latitude;
+        userLongitude = userLocation.longitude;
+      }
       
       let closestCity = null;
       let shortestDistance = Infinity;
-      
       cities.forEach((city) => {
         const distance = calculateDistance(
           userLatitude,
           userLongitude,
-          city.latt,
-          city.long
+          city.lat,
+          city.lng
           );
           
           if (distance < shortestDistance) {
             shortestDistance = distance;
-            closestCity = city.english_name;
+            closestCity = city.name;
           }
         });
         

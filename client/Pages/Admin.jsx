@@ -10,11 +10,6 @@ export default function Admin(props) {
     const [restaurantListVisible, setRestaurantListVisible] = useState(false);
     const [selectedOption, setSelectedOption] = useState('all');
 
-  // const handleEditUser = (id) => {
-  //   // Handle edit action for the user with the specified id
-  //   console.log(`Edit user with ID: ${id}`);
-  // };
-
   useEffect(() => {
     LoadRestaurants();
   }, []);
@@ -70,7 +65,6 @@ export default function Admin(props) {
   const handleApprovedRestaurant = async (id, email, name) => {
     console.log(`Add restaurant with ID: ${id}`);
     // show a confirmation alert before approving the restaurant
-    // console.log(id, email, name);
     Alert.alert(
       'Add Restaurant',
       'Are you sure you want to add this restaurant?',
@@ -84,7 +78,6 @@ export default function Admin(props) {
   }
 
   const renderUserItem = ({ item }) => {
-    //LoadUsers();
     return (
     <View style={{ flexDirection: 'row', alignItems: 'center', paddingVertical: 8 }}>
       <Image source={{ uri: item.image }} style={{ width: 50, height: 50, borderRadius: 25, margin: 10 }} />
@@ -98,10 +91,7 @@ export default function Admin(props) {
           <Text style={styles.itemMore}>{item.phone}</Text>
         </View>
       </View>
-{/* 
-      <TouchableOpacity onPress={() => handleEditUser(item._id)}>
-        <Text style={{ color: 'blue', marginRight: 10 }}>Edit</Text>
-      </TouchableOpacity> */}
+
       <TouchableOpacity onPress={() => handleDeleteUser(item._id)}>
         <MaterialIcons name="delete" size={40} color="red" />
       </TouchableOpacity>
@@ -169,11 +159,11 @@ export default function Admin(props) {
           <Text style={styles.text}>DineInTime</Text>
         </View>
         <View style={styles.page}>
-            <TouchableOpacity onPress={handleShowUsers}>
-                <Text style={styles.head}>Users</Text>
+            <TouchableOpacity  style={styles.option} onPress={handleShowUsers}>
+                <Text style={styles.optionText}>Users</Text>
             </TouchableOpacity>
-            <TouchableOpacity onPress={handleShowRestaurants}>
-                <Text style={styles.head}>Restaurants</Text>
+            <TouchableOpacity  style={styles.option} onPress={handleShowRestaurants}>
+                <Text style={styles.optionText}>Restaurants</Text>
             </TouchableOpacity>
         </View>
         </ScrollView>
@@ -215,7 +205,6 @@ export default function Admin(props) {
 const styles = StyleSheet.create({
     container: {
       justifyContent: "center",
-      //backgroundColor: "#94B285",
       width: "100%",
       height: "100%",
     },
@@ -244,6 +233,19 @@ const styles = StyleSheet.create({
         fontFamily: 'eb-garamond',
         margin: 15,
         textAlign: 'center',
+    },
+    option: {
+      backgroundColor: '#aaccc6',
+      paddingVertical: 10,
+      paddingHorizontal: 20,
+      borderRadius: 10,
+      margin: 10,
+    },
+    optionText: {
+      color: '#ffffff',
+      fontSize: 16,
+      fontWeight: 'bold',
+      fontFamily: 'eb-garamond',
     },
     column: {
         flexDirection: 'row',

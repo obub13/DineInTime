@@ -81,7 +81,7 @@ export default function Page1(props) {
           <Text style={styles.text}>DineInTime</Text>
         </View>
         <TouchableOpacity>
-        <Text style={styles.headline} onPress={() => props.navigation.navigate("Reservation")}>Search by Location</Text>
+            <Text style={styles.headline} onPress={() => props.navigation.navigate("Reservation")}>Search by Location</Text>
         </TouchableOpacity>
         <View>
             <Text style={styles.categories}>Categories</Text>
@@ -100,7 +100,6 @@ export default function Page1(props) {
                 {renderRestaurants(selectedFoodType)}
               </View>
             )}
-            {/* <Charts /> */}
           </View>
         )}
     </ScrollView>
@@ -111,7 +110,6 @@ export default function Page1(props) {
 const styles = StyleSheet.create({
   container: {
     justifyContent: "center",
-    //backgroundColor: "#94B285",
     width: "100%",
     height: "100%",
   },

@@ -4,15 +4,13 @@ import { ContextPage } from "../Context/ContextProvider";
 import { sendPushNotification, registerForPushNotificationsAsync } from "./PushNotification";
 import { Button, TextInput, HelperText, Checkbox } from 'react-native-paper';
 import { useFonts } from "expo-font";
-import * as Localization from 'expo-localization';  //imports for device language func
 
 export default function Login(props) {
   
-  const { expoPushToken, setExpoPushToken, userName, password, setUserName, setPassword, setLoginUser, checkLoginUser, checkLoginRestaurant, isRestaurantOwner, setIsRestaurantOwner } = useContext(ContextPage);
+  const { setExpoPushToken, userName, password, setUserName, setPassword, setLoginUser, checkLoginUser, checkLoginRestaurant, isRestaurantOwner, setIsRestaurantOwner } = useContext(ContextPage);
   
   const [isPasswordVisible, setIsPasswordVisible] = useState(false);
   const [pressed, setPressed] = useState(false);
-  const [submit, setSubmit] = useState(false);
   const [bothHelper, setBothHelper] = useState(false);
   const [foundHelper, setFoundHelper] = useState(false);
   const [approvalHelper, setApprovalHelper] = useState(false);
@@ -25,16 +23,7 @@ const [loaded] = useFonts({
 if (!loaded) {
   return;
 }
-//function to get device language
-// const GetDeviceLanguage= () => {
-//       // Get the device's current locale
-//       const currentLocale = Localization.locale;
-    
-//       // Extract the language from the locale (e.g., 'en-US' -> 'en')
-//       const deviceLanguage = currentLocale.split('-')[0];
-//       console.log('device langauge', deviceLanguage);
-//       return deviceLanguage;
-// }
+
   
   const handlePressIn = () => {
     setPressed(true);
@@ -54,7 +43,7 @@ if (!loaded) {
 
 
   const handleLogin = async() => {
-    // GetDeviceLanguage();
+
     await checkInputsValidation();
     setFoundHelper(false);
     setApprovalHelper(false);
@@ -69,7 +58,6 @@ if (!loaded) {
         const user = await checkLoginUser(userName, password);
         setLoginUser(user);
         if (user) {
-           // Successfully logged in, now get the Expo push token and send a notification
           const token = await registerForPushNotificationsAsync();
           setExpoPushToken(token);
           await sendPushNotification('Login Successful', 'Welcome to the app!', token);
@@ -79,7 +67,6 @@ if (!loaded) {
             props.navigation.navigate("Home");
           }
         } else {
-          //alert('Invalid Error');
           setFoundHelper(true);
         }
       } else {
@@ -92,7 +79,6 @@ if (!loaded) {
             await sendPushNotification('Login Successful', 'Welcome to the app!', token);
             props.navigation.navigate('RestaurantDetails', { userType: 'restaurantOwner', restaurant: restaurant });
           } else {
-            //alert("Your restaurant hasn't been approved yet. Please wait for approval.");
             setApprovalHelper(true);
           }
         } else {
@@ -101,7 +87,6 @@ if (!loaded) {
       }
       
     } catch (error) {
-      //alert('Invalid Error');
       setFoundHelper(true);
     }
   };
@@ -159,7 +144,7 @@ if (!loaded) {
 const styles = StyleSheet.create({
   container: {
     justifyContent: "center",
-    //backgroundColor: "#94B285",
+    paddingTop: 100,
     width: "100%",
     height: "100%",
   },
@@ -213,6 +198,7 @@ const styles = StyleSheet.create({
     alignSelf: "center",
     width: "75%",
     borderWidth: 2,
+    borderColor: "#90b2ac",
     margin: 10,
   },
   bottomCon: {

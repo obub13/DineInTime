@@ -89,7 +89,6 @@ export default function RestaurantDetails({ route, navigation }) {
     const fetchRestaurantData = async () => {
       // Fetch restaurant data
       const location = await Location.geocodeAsync(restaurant.location);
-      console.log(location[0]);
       if (location) {
         setRestaurantLocation(location[0]);
       }
@@ -159,6 +158,7 @@ const handleAddItem = () => {
         setMenuItems([...menuItems, itemAdded]);
       }  
     } 
+
     // Close the modal and reset the captured details
     setIsAddingItem(false);
     setNewItemName('');
@@ -286,6 +286,7 @@ const handleAddItem = () => {
     </View>
   )};
 
+
   const renderCategoryLink = ({ item, index }) => {
     return (
       <TouchableOpacity key={index} onPress={() => setFilterCategory(item)}>
@@ -293,7 +294,6 @@ const handleAddItem = () => {
       </TouchableOpacity>
     );
   };
-
 
 
   return (
@@ -321,12 +321,13 @@ const handleAddItem = () => {
         <MapView
           key={`${restaurantLocation.latitude}_${restaurantLocation.longitude}`}
           style={{ width: '100%', height: 200 }}
-          initialRegion={{
+          region={{
             latitude: restaurantLocation ? restaurantLocation.latitude : 0,
             longitude: restaurantLocation ? restaurantLocation.longitude : 0,
             latitudeDelta: 0.015,
             longitudeDelta: 0.0121,
-        }}>
+        }}
+        scrollEnabled={false}> 
         <Marker
             coordinate={restaurantLocation}
             title={restaurant.name}
@@ -543,12 +544,12 @@ const styles = StyleSheet.create({
         textAlign: 'center',
     },
     itemName: {
-      fontFamily: 'eb-garamond-italic', 
-      margin: 3, 
-      fontSize: 24,
-      width: '40%',
-      textAlign: "center",
-  },
+        fontFamily: 'eb-garamond-italic', 
+        margin: 3, 
+        fontSize: 24,
+        width: '40%',
+        textAlign: "center",
+    },
     btn: {
         height: 50,
         alignSelf: "center",

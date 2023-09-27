@@ -1,5 +1,5 @@
-import React, { useContext, useEffect, useState } from "react";
-import { View, Text, Modal, TouchableOpacity, ActivityIndicator, ScrollView, FlatList,} from "react-native";
+import React, { useContext, useEffect } from "react";
+import { View, Text, ActivityIndicator, FlatList } from "react-native";
 import { ContextPage } from "../Context/ContextProvider";
 import WebView from "react-native-webview";
 
@@ -20,16 +20,7 @@ const generateBackgroundColors = (count) => {
 };
 
 export default function Charts() {
-  const {
-    LoadRestaurants,
-    restaurants,
-    LoadFoodTypes,
-    foodTypes,
-    LoadUsers,
-    users,
-  } = useContext(ContextPage);
-  // const [selectedCity, setSelectedCity] = useState('All');
-  const [modalVisible, setModalVisible] = useState(false);
+  const { LoadRestaurants, restaurants, LoadFoodTypes, foodTypes, LoadUsers, users } = useContext(ContextPage);
 
   useEffect(() => {
     LoadRestaurants();
@@ -40,63 +31,13 @@ export default function Charts() {
   // Generate background colors for food types
   const backgroundColors = generateBackgroundColors(foodTypes.length);
 
-  // const cityList = ['All', ...new Set(restaurants.map(restaurant => restaurant.location))];
-
   const getFilteredRestaurantData = () => {
     return restaurants.filter((restaurant) => restaurant.approved === true);
-    //   if (selectedCity === 'All') {
-    //     return restaurants.filter(restaurant => restaurant.approved === true);
-    //   }
-    //   return restaurants.filter(restaurant => restaurant.location === selectedCity && restaurant.approved === true);
   };
 
   const filteredRestaurantData = getFilteredRestaurantData();
-  const filteredRestaurantNames = filteredRestaurantData.map(
-    (restaurant) => restaurant.name
-  );
-  const filteredAvailableSeatsData = filteredRestaurantData.map(
-    (restaurant) => restaurant.availableSeats
-  );
-
-  // Render the city dropdown
-  const renderCityDropdown = () => {
-    return (
-      <Modal
-        visible={modalVisible}
-        animationType="slide"
-        transparent={true}
-        onRequestClose={() => setModalVisible(false)}
-      >
-        <View
-          style={{ flex: 1, justifyContent: "center", alignItems: "center" }}
-        >
-          <View
-            style={{ backgroundColor: "#fff", padding: 20, borderRadius: 8 }}
-          >
-            {cityList.map((city) => (
-              <TouchableOpacity
-                key={city}
-                onPress={() => {
-                  setSelectedCity(city);
-                  setModalVisible(false);
-                }}
-              >
-                <Text
-                  style={{
-                    fontSize: 18,
-                    marginBottom: 10,
-                    fontFamily: "eb-garamond",
-                  }}
-                >
-                  {city}
-                </Text>
-              </TouchableOpacity>
-            ))}
-          </View>
-        </View>
-      </Modal>
-    );
-  };
+  const filteredRestaurantNames = filteredRestaurantData.map((restaurant) => restaurant.name);
+  const filteredAvailableSeatsData = filteredRestaurantData.map((restaurant) => restaurant.availableSeats);
 
   const usersAndRestaurantsChartConfig = {
     type: "bar",
