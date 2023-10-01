@@ -220,7 +220,7 @@ export default function ContextProvider(props) {
         },
       });
       let data = await res.json();
-      console.log(data);
+      console.log('user data' , data);
       return data;
     } catch (error) {
       console.error(error);
@@ -288,6 +288,24 @@ export default function ContextProvider(props) {
       });
       let data = await res.json();
       console.log(data);
+    } catch (error) {
+      console.error(error);
+    } finally {
+      LoadUsers();
+    }
+  };
+
+  const saveUserToken = async (id, token) => {
+    try {
+      let res = await fetch(`${apiUrl}/api/users/edit/${id}/token`, {
+        method: "PUT",
+        body: JSON.stringify({ token }),
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+      let data = await res.json();
+      console.log('saveusertoken func data', data);
     } catch (error) {
       console.error(error);
     } finally {
@@ -922,7 +940,7 @@ export default function ContextProvider(props) {
     loadingReviews, setLoadingReviews, deleteReview, editReview,
     googleMapsApiKey, GetGoogleApi, handleLocalImageUpload, GetFirebaseConfig,
     imgSrc, setImgSrc, isRestaurantOwner, setIsRestaurantOwner, editRestaurant,
-    isUploading, setIsUploading,
+    isUploading, setIsUploading, saveUserToken
   };
 
   return (

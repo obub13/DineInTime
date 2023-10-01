@@ -50,6 +50,9 @@ class User {
     static async DeleteUser(id){
         return await new DB().DeleteById(User.collection, id);
     }
+    static async EditUserToken(id, token){
+        return await new DB().EditUserToken(User.collection, id, token);
+    }
 }
 
 module.exports = User;
