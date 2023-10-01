@@ -296,9 +296,7 @@ export default function ContextProvider(props) {
   };
 
   const saveUserToken = async (id) => {
-    console.log('saveusertoken function : ', id);
     let expoToken = expoPushToken.data;
-    console.log('saveusertoken expotoken:', expoToken);
     try {
       let res = await fetch(`${apiUrl}/api/users/edit/${id}/token`, {
         method: "PUT",
@@ -308,7 +306,6 @@ export default function ContextProvider(props) {
         },
       });
       let data = await res.json();
-      console.log('res status', res.json());
       console.log('end of saveUserToken function', data);
     } catch (error) {
       console.error(error);

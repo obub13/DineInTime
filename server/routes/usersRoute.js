@@ -72,7 +72,7 @@ usersRoute.put('/edit/:id', async (req, res) => {
     }
 });
 
-usersRoute.put('edit/:id/token', async (req, res) => {
+usersRoute.put('/edit/:id/token', async (req, res) => {
     try {
         let { id } = req.params;
         let { token } = req.body;
