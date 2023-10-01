@@ -296,17 +296,17 @@ export default function ContextProvider(props) {
   };
 
   const saveUserToken = async (id) => {
-    let expoToken = expoPushToken.data;
+    let token = expoPushToken.data;
     try {
       let res = await fetch(`${apiUrl}/api/users/edit/${id}/token`, {
         method: "PUT",
-        body: JSON.stringify({ expoToken }),
+        body: JSON.stringify({ token }),
         headers: {
           "Content-Type": "application/json",
         },
       });
       let data = await res.json();
-      console.log('end of saveUserToken function', data);
+      console.log('SaveUserToken Finished', data);
     } catch (error) {
       console.error(error);
     } finally {
@@ -587,12 +587,20 @@ export default function ContextProvider(props) {
       });
       let data = await res.json();
       if (data) {
-        console.log(data);
+        console.log('data cao', data);
         await updateSeats(id, seatType, numDiners);
         let subject = 'Order Approval';
         let message = `Congratulations! Your Order number: ${orderId} has been approved.\n
         You requested ${numDiners} seat(s) of type ${seatType}.\nThank you for choosing us!`;
         await sendEmail(email, subject, message);
+        console.log('AFTER EMAIL', email);
+        let u = await fetch(`${apiUrl}/api/users/email/${email}`);
+        let userData = await u.json();
+        console.log(userData);
+        let userToken = userData.Token
+        console.log('approvedorder token id', userData.Token);
+        await sendPushNotification(subject, message, userToken);
+
       }
     } catch (error) {
       console.error({error: error.message});
