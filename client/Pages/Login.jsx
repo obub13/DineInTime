@@ -57,11 +57,11 @@ if (!loaded) {
       if (!isRestaurantOwner) {
         const user = await checkLoginUser(userName, password);
         setLoginUser(user);
-
+        console.log('userid',user._id);
         if (user) {
           const token = await registerForPushNotificationsAsync();
           setExpoPushToken(token);
-          saveUserToken(token);
+          await saveUserToken(user._id);
           await sendPushNotification('Login Successful', 'Welcome to the app!', token);
           if (userName === "Admin1" || userName === "Admin2" || userName === "shaked1299@gmail.com" || userName === "ofekbub@gmail.com") {
             props.navigation.navigate("Admin");

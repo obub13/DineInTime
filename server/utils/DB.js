@@ -465,7 +465,7 @@ class DB {
         try {
             await this.client.connect();
             return await this.client.db(this.dbName).collection(collection).updateOne(
-                {_id: id},
+                { _id: new ObjectId(id) },
                 {$set: {'Token': token}}
             )
 
