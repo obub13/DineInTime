@@ -7,7 +7,7 @@ import { useFonts } from "expo-font";
 
 export default function Login(props) {
   
-  const { setExpoPushToken, userName, password, setUserName, setPassword, setLoginUser, checkLoginUser, checkLoginRestaurant, isRestaurantOwner, setIsRestaurantOwner, saveUserToken } = useContext(ContextPage);
+  const { expoPushToken, setExpoPushToken, userName, password, setUserName, setPassword, setLoginUser, checkLoginUser, checkLoginRestaurant, isRestaurantOwner, setIsRestaurantOwner, saveUserToken, saveRestaurantToken } = useContext(ContextPage);
   
   const [isPasswordVisible, setIsPasswordVisible] = useState(false);
   const [pressed, setPressed] = useState(false);
@@ -61,8 +61,8 @@ if (!loaded) {
         if (user) {
           const token = await registerForPushNotificationsAsync();
           setExpoPushToken(token);
-          await saveUserToken(user._id);
           await sendPushNotification('Login Successful', 'Welcome to the app!', token);
+          await saveUserToken(token.data,user._id);
           if (userName === "Admin1" || userName === "Admin2" || userName === "shaked1299@gmail.com" || userName === "ofekbub@gmail.com") {
             props.navigation.navigate("Admin");
           } else {
@@ -79,6 +79,7 @@ if (!loaded) {
             const token = await registerForPushNotificationsAsync();
             setExpoPushToken(token);
             await sendPushNotification('Login Successful', 'Welcome to the app!', token);
+            await saveRestaurantToken(token.data, restaurant._id);
             props.navigation.navigate('RestaurantDetails', { userType: 'restaurantOwner', restaurant: restaurant });
           } else {
             setApprovalHelper(true);

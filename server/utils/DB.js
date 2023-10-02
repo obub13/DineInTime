@@ -461,7 +461,7 @@ class DB {
         }
     }
     
-    async EditUserToken(collection, id, token){
+    async EditToken(collection, id, token){
         try {
             await this.client.connect();
             return await this.client.db(this.dbName).collection(collection).updateOne(

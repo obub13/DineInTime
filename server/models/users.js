@@ -51,7 +51,7 @@ class User {
         return await new DB().DeleteById(User.collection, id);
     }
     static async EditUserToken(id, token){
-        return await new DB().EditUserToken(User.collection, id, token);
+        return await new DB().EditToken(User.collection, id, token);
     }
 }
 

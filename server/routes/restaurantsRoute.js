@@ -190,6 +190,17 @@ restaurantsRoute.put('/edit/:id/menu', async (req, res) => {
     }
 });
 
+restaurantsRoute.put('/edit/:id/token', async (req, res) => {
+    try {
+        let { id } = req.params;
+        let { token } = req.body;
+        let data = await Restaurant.EditRestaurantToken(id, token);;
+        res.status(200).json(data);
+    } catch (error) {
+        res.status(500).json({ error });
+    }
+});
+
 restaurantsRoute.put('/edit/:id/reviews', async (req, res) => {
     try {
         let { id } = req.params;
